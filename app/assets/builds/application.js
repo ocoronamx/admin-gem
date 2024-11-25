@@ -20344,17 +20344,18 @@ Controller.targets = [];
 Controller.outlets = [];
 Controller.values = {};
 
+// app/javascript/controllers/hello_controller.js
+var hello_controller_default = class extends Controller {
+  connect() {
+    this.element.textContent = "Hello Controller: Welcome! :D";
+  }
+};
+
 // app/javascript/controllers/application.js
 var application = Application.start();
 application.debug = false;
 window.Stimulus = application;
-
-// app/javascript/controllers/hello_controller.js
-var hello_controller_default = class extends Controller {
-  connect() {
-    this.element.textContent = "Hello World!";
-  }
-};
+application.register("hello", hello_controller_default);
 
 // app/javascript/controllers/index.js
 application.register("hello", hello_controller_default);

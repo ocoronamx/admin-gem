@@ -6,4 +6,7 @@ const application = Application.start()
 application.debug = false
 window.Stimulus   = application
 
+import HelloController from "./hello_controller"
+application.register("hello", HelloController)
+
 export { application }
