@@ -1,0 +1,73 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <div class="navbar navbar-expand">
+            <ul class="navbar-nav">
+              <h3 class="card-title">Index demo</h3>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+              <a href="<%= demos_form_url %>" class="btn btn-tool btn-sm">
+                <i class="fas fa-plus-circle"></i>
+                New record
+              </a>
+            </ul>
+          </div>
+        </div>
+        <!-- /.card-header -->
+        <%= render "layouts/adminlte/modals" %>
+        <div class="card-body table-responsive p-0">
+          <table class="table table-head-fixed text-nowrap table-striped">
+            <thead>
+            <tr>
+              <th>Employee ID</th>
+              <th>Full name</th>
+              <th>Email</th>
+              <th>User role</th>
+              <th>More</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% @list.each do |element| %>
+              <tr>
+                <td><%= element[:id] %></td>
+                <td><%= element[:name] %></td>
+                <td><%= element[:email] %></td>
+                <td><%= element[:role] %></td>
+                <td>
+                  <button  class="text-muted" data-toggle="modal" data-target="#modal-danger" style="background: none; border: none; margin: 0; padding: 0; cursor: pointer; outline: none;">
+                    <i class="fas fa-trash" title="Destroy record"></i>
+                  </button>
+                </td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer clearfix" style="margin-top: 0%;">
+          <!--          Showing 1 to 10 of 10 entries-->
+          <div class="row">
+            <div class="col-sm-12 col-md-5">
+              <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">Showing 1 to 10 of <%= @list.length %> entries</div>
+            </div>
+            <div class="col-sm-12 col-md-7">
+              <div class="dataTables_paginate paging_simple_numbers" id="example1_paginate">
+                <ul class="pagination pagination-sm m-0 float-right">
+                  <li class="paginate_button page-item previous disabled" id="example1_previous"><a href="#" aria-controls="example1" data-dt-idx="0" tabindex="0" class="page-link">Previous</a></li>
+                  <li class="paginate_button page-item active"><a href="#" aria-controls="example1" data-dt-idx="1" tabindex="0" class="page-link">1</a></li>
+                  <li class="paginate_button page-item "><a href="#" aria-controls="example1" data-dt-idx="2" tabindex="0" class="page-link">2</a></li>
+                  <li class="paginate_button page-item "><a href="#" aria-controls="example1" data-dt-idx="3" tabindex="0" class="page-link">3</a></li>
+                  <li class="paginate_button page-item "><a href="#" aria-controls="example1" data-dt-idx="4" tabindex="0" class="page-link">4</a></li>
+                  <li class="paginate_button page-item next" id="example1_next"><a href="#" aria-controls="example1" data-dt-idx="7" tabindex="0" class="page-link">Next</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

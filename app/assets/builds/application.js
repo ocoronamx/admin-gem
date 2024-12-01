@@ -20368,7 +20368,18 @@ var import_adminlte_min = __toESM(require_adminlte_min());
 window.jQuery = import_jquery.default;
 window.$ = import_jquery.default;
 $(document).ready(function() {
-  console.log("jQuery is working!");
+  let url = window.location;
+  $('[data-widget="sidebar-search"]').SidebarSearch("init");
+  $("ul.nav-sidebar a").filter(function() {
+    if (this.href) {
+      return this.href == url || url.href.indexOf(this.href) == 0;
+    }
+  }).addClass("active");
+  $("ul.nav-treeview a").filter(function() {
+    if (this.href) {
+      return this.href == url || url.href.indexOf(this.href) == 0;
+    }
+  }).parentsUntil(".nav-sidebar > .nav-treeview").addClass("menu-open").prev("a").addClass("active");
 });
 /*! Bundled license information:
 

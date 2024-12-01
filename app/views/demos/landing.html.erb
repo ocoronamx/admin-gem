@@ -1,0 +1,85 @@
+<!-- Navbar -->
+<nav class="navbar navbar-light navbar-white" style="margin-bottom: -5%">
+  <div class="container">
+    <%= link_to root_path, class: "brand-link" do %>
+      <%= image_tag("dist/img/AdminLTELogo.png", class: "brand-image img-circle elevation-3", style: 'opacity: .8')%>
+    <% end %>
+    <span class="brand-text font-weight-normal" style="color: dimgrey"><b>Admin</b>Gem</span>
+    <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+      <!-- Left navbar links -->
+      <ul class="navbar-nav">
+      </ul>
+    </div>
+    <!-- Right navbar links -->
+    <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+      <li class="nav-item dropdown">
+        <a href="<%= demos_dashboard_path %>" type="button" class="btn nav-link btn-block" title="Home"><i class="fas fa-tachometer-alt"></i></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a href="<%= demos_login_path %>" type="button" class="btn nav-link btn-block" title="Sign in"><i class="fa fa-sign-in-alt"></i></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<!-- /.navbar -->
+
+<body class="hold-transition lockscreen">
+<!-- Automatic element centering -->
+<div class="lockscreen-wrapper">
+  <div class="text-center">
+    <p class="h1" style="font-size: 67px; color: dimgrey"><b>Admin</b>Gem</p>
+    <p class="h3" style="color: grey"> AdminLTE 3 & Ruby 3 on Rails 7 </p>
+    <p class="mb-1">
+      <a href="<%= demos_dashboard_path %>">Go to Home Dashboard</a>
+    </p>
+  </div>
+</div>
+</body>
+<hr>
+
+<section class="content">
+  <div class="container-fluid">
+
+    <div class="row">
+      <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="card mb-2 bg-gradient-dark">
+          <%= image_tag("dist/img/photo1.png", class: "card-img-top", alt: 'Dist Photo 1') %>
+          <div class="card-img-overlay d-flex flex-column justify-content-end">
+            <h5 class="card-title text-primary text-white">Card Title</h5>
+            <p class="card-text text-white pb-2 pt-1">Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor.</p>
+            <a href="#" class="text-white">Last update 2 mins ago</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="card mb-2">
+          <%= image_tag("dist/img/photo2.png", class: "card-img-top", alt: 'Dist Photo 2') %>
+          <div class="card-img-overlay d-flex flex-column justify-content-center">
+            <h5 class="card-title text-white mt-5 pt-2">Card Title</h5>
+            <p class="card-text pb-2 pt-1 text-white">
+              Lorem ipsum dolor sit amet, <br>
+              consectetur adipisicing elit <br>
+              sed do eiusmod tempor.
+            </p>
+            <a href="#" class="text-white">Last update 15 hours ago</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="card mb-2">
+          <%= image_tag("dist/img/photo3.jpg", class: "card-img-top", alt: 'Dist Photo 3') %>
+          <div class="card-img-overlay">
+            <h5 class="card-title text-primary">Card Title</h5>
+            <p class="card-text pb-1 pt-1 text-white">
+              Lorem ipsum dolor <br>
+              sit amet, consectetur <br>
+              adipisicing elit sed <br>
+              do eiusmod tempor. </p>
+            <a href="#" class="text-primary">Last update 3 days ago</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
