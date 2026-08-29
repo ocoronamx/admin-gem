@@ -90,6 +90,11 @@ production:
     database: admin_gem_production
     username: admin_gem
     password: <%= ENV["ADMIN_GEM_DATABASE_PASSWORD"] %>
+    host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+    connect_timeout: 5
+    variables:
+      statement_timeout: "15s"
   cache:
     <<: *primary_production
     database: admin_gem_production_cache
