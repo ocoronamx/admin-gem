@@ -1,7 +1,12 @@
 source "https://rubygems.org"
 
+ruby "3.4.10"
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.3", ">= 8.1.3.1"
+# Corrige CVE-2026-80212 / CVE-2026-80213 (resolv bundled con Ruby 3.4.10).
+# Quitar esta línea cuando Ruby publique un 3.4.x con resolv >= 0.7.2 de fábrica.
+gem "resolv", ">= 0.7.2"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use postgresql as the database for Active Record
@@ -52,6 +57,18 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Integrates the Rails testing helpers into RSpec.
+  gem "rspec-rails"
+
+  # Provides integration between factory_bot and Rails 6.1 or newer
+  gem "factory_bot_rails"
+
+  # Data::Faker fork from Perl, generate fake data: names, addresses, phone numbers, etc.
+  gem "faker"
+
+  # Code style checking for RSpec files. A plugin for the RuboCop code style enforcing & linting tool.
+  gem "rubocop-rspec", require: false
 end
 
 group :development do
