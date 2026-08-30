@@ -17,8 +17,8 @@ class ApplicationController < ActionController::Base
   before_action :set_sidebar_state
 
   # Falla en vez de dejar pasar en silencio si un controlador nuevo olvida autorizar una acción.
-  after_action :verify_authorized, except: :index, raise: false
-  after_action :verify_policy_scoped, only: :index, raise: false
+  # after_action :verify_authorized, except: :index, raise: false
+  after_action :verify_pundit_authorization, unless: :skip_pundit_authorization?
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
@@ -72,5 +72,17 @@ class ApplicationController < ActionController::Base
   def user_not_authorized
     flash[:alert] = "No tienes permiso para realizar esta acción."
     redirect_back fallback_location: root_path
+  end
+
+  def verify_pundit_authorization
+    if action_name == "index"
+      verify_policy_scoped
+    else
+      verify_authorized
+    end
+  end
+
+  def skip_pundit_authorization?
+    controller_name == "sessions"
   end
 end

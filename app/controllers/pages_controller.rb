@@ -1,6 +1,7 @@
 class PagesController < ApplicationController
-  skip_after_action :verify_authorized, raise: false
   before_action :ensure_local_environment, only: :styleguide
+
+  skip_after_action :verify_pundit_authorization
 
   def styleguide
   end

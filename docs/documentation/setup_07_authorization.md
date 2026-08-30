@@ -264,8 +264,8 @@ class ApplicationController < ActionController::Base
   before_action :set_sidebar_state
 
   # Falla en vez de dejar pasar en silencio si un controlador nuevo olvida autorizar una acción.
-  after_action :verify_authorized, except: :index
-  after_action :verify_policy_scoped, only: :index
+  # after_action :verify_authorized, except: :index, raise: false
+  after_action :verify_pundit_authorization, unless: :skip_pundit_authorization?
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
@@ -320,6 +320,18 @@ class ApplicationController < ActionController::Base
     flash[:alert] = "No tienes permiso para realizar esta acción."
     redirect_back fallback_location: root_path
   end
+
+  def verify_pundit_authorization
+    if action_name == "index"
+      verify_policy_scoped
+    else
+      verify_authorized
+    end
+  end
+
+  def skip_pundit_authorization?
+    controller_name == "sessions"
+  end
 end
 ```
 
@@ -327,15 +339,10 @@ app/controllers/pages_controller.rb — añade la primera línea dentro de la cl
 
 ```ruby
 class PagesController < ApplicationController
-  skip_after_action :verify_authorized # /styleguide no es un recurso con permisos, solo una herramienta de dev
   before_action :ensure_local_environment, only: :styleguide
+
+  skip_after_action :verify_pundit_authorization
   ...
-```
-
-app/controllers/sessions_controller.rb y app/controllers/passwords_controller.rb — añade a ambos, justo después de layout "application":
-
-```ruby
-  skip_after_action :verify_authorized # pantallas previas a autenticación, no hay "usuario" que autorizar
 ```
 
 db/seeds.rb (reemplaza el de Setup 6):

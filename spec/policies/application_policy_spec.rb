@@ -41,7 +41,7 @@ RSpec.describe ApplicationPolicy, type: :policy do
     subject { described_class }
 
     let(:role) { create(:role, name: "Administrador", key: "admin") }
-    let(:user) { create(:user, email_address: "user@mail.com", password: "password123", role: role) }
+    let(:user) { create(:user, email_address: "user@mail.com", password: "password 1 2 3", role: role) }
 
     let(:record) { instance_double(Widget) }
 
