@@ -1,11 +1,10 @@
-
-
-
 # Controlador base de la aplicación del cual heredan todos los demás controladores.
 # Maneja configuraciones globales como restricciones de navegador, caching, el layout principal,
-# y la inicialización de preferencias de la interfaz (tema visual y estado de la barra lateral).
+# la autorización con Pundit, y la inicialización de preferencias de la interfaz (tema visual y estado de la barra lateral).
 class ApplicationController < ActionController::Base
   include Authentication
+  include Pundit::Authorization
+
   # Restringe el acceso únicamente a navegadores modernos con soporte completo para tecnologías web recientes.
   allow_browser versions: :modern
 
@@ -16,6 +15,12 @@ class ApplicationController < ActionController::Base
 
   before_action :set_theme
   before_action :set_sidebar_state
+
+  # Falla en vez de dejar pasar en silencio si un controlador nuevo olvida autorizar una acción.
+  after_action :verify_authorized, except: :index, raise: false
+  after_action :verify_policy_scoped, only: :index, raise: false
+
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   helper_method :current_theme, :sidebar_collapsed?
 
@@ -52,5 +57,20 @@ class ApplicationController < ActionController::Base
   # @note Expuesto como `helper_method` para su consumo directo en plantillas ERB.
   def sidebar_collapsed?
     @sidebar_collapsed
+  end
+
+  # Usuario que Pundit usa en policies y scopes. Por defecto Pundit llama a
+  # `current_user`, que no existe en nuestra app (usamos `Current.user`, del
+  # generador de autenticación nativo de Rails 8).
+  #
+  # @return [User, nil]
+  def pundit_user
+    Current.user
+  end
+
+  # Maneja los rechazos de autorización de Pundit de forma consistente en toda la app.
+  def user_not_authorized
+    flash[:alert] = "No tienes permiso para realizar esta acción."
+    redirect_back fallback_location: root_path
   end
 end

@@ -1,6 +1,8 @@
 class PasswordsController < ApplicationController
   layout "application"
 
+  skip_after_action :verify_authorized, raise: false # pantallas previas a autenticación, no hay "usuario" que autorizar
+
   allow_unauthenticated_access
   before_action :set_user_by_token, only: %i[ edit update ]
   rate_limit to: 10, within: 3.minutes, only: :create,

@@ -9,14 +9,14 @@
 * Setup 4  — Frontend / Design System        hecho (Tailwind v4 + DaisyUI v5, tokens, dark/light)
 * Setup 5  — Layout administrativo           hecho (sidebar, header, breadcrumbs, mobile nav)
 * Setup 6  — Authentication                  (generador nativo Rails 8 + hardening)
+* Setup 7  — Authorization                   (Pundit + Role/Permission)
 
 ## CURRENT:
 
-* Setup 7  — Authorization                   (Pundit + Role/Permission)
+* Setup 8  — Componentes                     (partials/helpers/Stimulus del design system)
 
 ## TODO:
 
-* Setup 8  — Componentes                     (partials/helpers/Stimulus del design system)
 * Setup 9  — Forms                           (form builder, Tom Select, inputs nativos de fecha)
 * Setup 10 — Tables / Filtros / Pagy         (tabla reutilizable, filtros por allowlist)
 * Setup 11 — Charts                          (wrapper ApexCharts v6.x)

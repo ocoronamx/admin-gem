@@ -10,11 +10,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_30_123258) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_30_183454) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "permissions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description", default: "", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_permissions_on_key", unique: true
+  end
+
+  create_table "role_permissions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "permission_id", null: false
+    t.bigint "role_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["permission_id"], name: "index_role_permissions_on_permission_id"
+    t.index ["role_id", "permission_id"], name: "index_role_permissions_on_role_id_and_permission_id", unique: true
+    t.index ["role_id"], name: "index_role_permissions_on_role_id"
+  end
+
+  create_table "roles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_roles_on_key", unique: true
+    t.index ["name"], name: "index_roles_on_name", unique: true
+  end
 
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -29,9 +56,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_123258) do
     t.datetime "created_at", null: false
     t.citext "email_address", null: false
     t.string "password_digest", null: false
+    t.bigint "role_id"
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["role_id"], name: "index_users_on_role_id"
   end
 
+  add_foreign_key "role_permissions", "permissions"
+  add_foreign_key "role_permissions", "roles"
   add_foreign_key "sessions", "users"
+  add_foreign_key "users", "roles"
 end
