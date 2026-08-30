@@ -1,0 +1,42 @@
+<%#
+  Vista parcial para la barra de navegación lateral (Sidebar).
+  Define una estructura orientada a datos para los elementos del menú,
+  manejando estados activos, deshabilitados y la integración con el helper de íconos.
+%>
+<%
+  nav_items = [
+    { label: "Inicio", icon: :home, path: root_path, available: true },
+    { label: "Usuarios", icon: :users, path: nil, available: false },
+    { label: "Catálogos", icon: :squares_2x2, path: nil, available: false },
+    { label: "Configuración", icon: :cog_6_tooth, path: nil, available: false }
+  ]
+%>
+<aside id="app-sidebar" class="menu bg-base-100 border-r border-base-300 min-h-full w-64 p-3 flex flex-col gap-1 transition-[width] duration-200 overflow-hidden">
+  <%# Identidad visual de la aplicación / Logo corporativo %>
+  <div class="flex items-center gap-2 px-2 py-3 mb-2">
+    <span class="size-8 rounded-box bg-primary text-primary-content grid place-items-center font-bold shrink-0">A</span>
+    <span class="sidebar-label font-semibold text-base-content whitespace-nowrap">Admin Gem</span>
+  </div>
+
+  <%# Lista de opciones de navegación %>
+  <ul class="menu-vertical w-full">
+    <% nav_items.each do |item| %>
+      <li>
+        <% if item[:available] %>
+          <%# Enlace dinámico con resaltado automático de la página activa vía current_page? %>
+          <%= link_to item[:path], class: (current_page?(item[:path]) ? "menu-active" : nil) do %>
+            <%= icon(item[:icon]) %>
+            <span class="sidebar-label whitespace-nowrap"><%= item[:label] %></span>
+          <% end %>
+        <% else %>
+          <%# Estado deshabilitado para funcionalidades aún no implementadas %>
+          <span class="text-base-content/40 cursor-not-allowed" aria-disabled="true" title="Próximamente">
+            <%= icon(item[:icon]) %>
+            <span class="sidebar-label whitespace-nowrap"><%= item[:label] %></span>
+            <span class="sidebar-label badge badge-ghost badge-sm ml-auto">pronto</span>
+          </span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</aside>

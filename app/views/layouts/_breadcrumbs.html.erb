@@ -1,0 +1,21 @@
+<%#
+  Vista parcial para la barra de navegación tipo "migas de pan" (Breadcrumbs).
+  Utiliza el helper `breadcrumbs` para renderizar secuencialmente la ruta de la página actual,
+  formateada con el componente de breadcrumbs de DaisyUI.
+%>
+<% if breadcrumbs.any? %>
+  <div class="breadcrumbs text-sm px-4 lg:px-6 pt-4 text-base-content/70">
+    <ul>
+      <%# Enlace base permanente hacia la página de inicio %>
+      <li><%= link_to "Inicio", root_path %></li>
+
+      <%# Iteración de los niveles de navegación acumulados %>
+      <% breadcrumbs.each do |crumb| %>
+        <li>
+          <%# Renderiza un enlace si existe un path, o texto plano si es la página actual %>
+          <%= crumb[:path] ? link_to(crumb[:label], crumb[:path]) : crumb[:label] %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

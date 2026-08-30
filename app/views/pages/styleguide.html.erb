@@ -1,14 +1,14 @@
-<div class="p-8 space-y-8 bg-base-200 min-h-screen">
-  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-semibold text-base-content">Design System — admin-gem</h1>
-    <label class="flex items-center gap-2 cursor-pointer">
-      <span class="text-sm">Modo oscuro</span>
-      <input type="checkbox" value="dark" class="toggle theme-controller"
-             data-controller="theme-toggle" data-action="change->theme-toggle#persist"
-             <%= "checked" if current_theme == "dark" %> />
-    </label>
-  </div>
+<%#
+  Guía de estilos (Styleguide / Design System).
+  Funciona como catálogo de referencia visual para los componentes de DaisyUI,
+  paleta de colores semántica y la colección de íconos disponibles en `IconsHelper`.
+%>
+<% add_breadcrumb "Design System" %>
 
+<div class="space-y-8">
+  <h1 class="text-2xl font-semibold text-base-content">Design System — admin-gem</h1>
+
+  <%# Muestra la paleta de colores del tema activo usando badges %>
   <section class="card bg-base-100 shadow p-6 space-y-3">
     <h2 class="font-medium">Colores semánticos</h2>
     <div class="flex flex-wrap gap-2">
@@ -23,6 +23,7 @@
     </div>
   </section>
 
+  <%# Variantes de botones y estados según la guía del sistema %>
   <section class="card bg-base-100 shadow p-6 space-y-3">
     <h2 class="font-medium">Botones</h2>
     <div class="flex flex-wrap gap-2">
@@ -31,6 +32,19 @@
       <button class="btn btn-outline">Outline</button>
       <button class="btn btn-error">Eliminar</button>
       <button class="btn" disabled>Deshabilitado</button>
+    </div>
+  </section>
+
+  <%# Catálogo dinámico que itera las claves definidas en IconsHelper::ICONS %>
+  <section class="card bg-base-100 shadow p-6 space-y-3">
+    <h2 class="font-medium">Iconos disponibles (IconsHelper)</h2>
+    <div class="flex flex-wrap gap-4">
+      <% IconsHelper::ICONS.each_key do |name| %>
+        <div class="flex flex-col items-center gap-1 text-xs text-base-content/60">
+          <%= icon(name) %>
+          <span><%= name %></span>
+        </div>
+      <% end %>
     </div>
   </section>
 </div>

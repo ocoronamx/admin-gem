@@ -1,0 +1,53 @@
+<%#
+  Vista parcial para el encabezado superior (Navbar).
+  Incluye los disparadores para el drawer móvil y el sidebar colapsable en desktop,
+  el selector de tema claro/oscuro (Stimulus) y el menú de usuario.
+%>
+<header class="navbar bg-base-100 border-b border-base-300 px-4 lg:px-6 gap-2">
+  <%# Sección izquierda: Controles del menú lateral %>
+  <div class="flex-1 flex items-center gap-2">
+    <%# Botón para abrir el drawer deslizable en pantallas pequeñas (< lg) %>
+    <label for="app-drawer" class="btn btn-ghost btn-circle lg:hidden" aria-label="Abrir menú">
+      <%= icon(:bars_3) %>
+    </label>
+
+    <%# Botón para colapsar/expandir la barra lateral en pantallas grandes (>= lg) usando Stimulus %>
+    <button type="button" class="btn btn-ghost btn-circle hidden lg:inline-flex"
+            data-controller="sidebar-toggle" data-action="sidebar-toggle#toggle"
+            aria-label="Colapsar barra lateral">
+      <%= icon(:bars_3) %>
+    </button>
+  </div>
+
+  <%# Sección derecha: Acciones del sistema y perfil %>
+  <div class="flex items-center gap-1">
+    <%# Botón de notificaciones (deshabilitado temporalmente) %>
+    <button type="button" class="btn btn-ghost btn-circle" aria-label="Notificaciones" disabled>
+      <%= icon(:bell) %>
+    </button>
+
+    <%# Switch de tema (Swap de DaisyUI) coordinado con el controlador Stimulus theme-toggle %>
+    <label class="swap swap-rotate btn btn-ghost btn-circle" aria-label="Cambiar tema">
+      <input type="checkbox" value="dark" class="theme-controller"
+             data-controller="theme-toggle" data-action="change->theme-toggle#persist"
+             <%= "checked" if current_theme == "dark" %> />
+      <span class="swap-on"><%= icon(:moon) %></span>
+      <span class="swap-off"><%= icon(:sun) %></span>
+    </label>
+
+    <%# Menú desplegable para opciones del usuario %>
+    <div class="dropdown dropdown-end">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle" aria-label="Cuenta">
+        <%= icon(:user_circle, css_class: "size-6") %>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box shadow z-10 w-52 mt-2 p-2">
+        <li class="menu-title">Sin sesión (Fase 5)</li>
+        <li>
+          <span class="text-base-content/40 cursor-not-allowed">
+            <%= icon(:arrow_right_on_rectangle) %> Cerrar sesión
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>

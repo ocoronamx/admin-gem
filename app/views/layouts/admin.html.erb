@@ -1,0 +1,42 @@
+<%#
+  Layout principal para el panel de administración.
+  Configura la estructura HTML global, inicializa los atributos de estado visual (tema y sidebar)
+  e integra el componente Drawer de DaisyUI para navegación responsive.
+%>
+<!DOCTYPE html>
+<html data-theme="<%= current_theme %>" data-sidebar="<%= sidebar_collapsed? ? "collapsed" : "expanded" %>">
+  <head>
+    <title><%= content_for(:title) || "Admin Gem" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <%# Carga del CSS de Tailwind y los módulos de JS vía Importmaps %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="bg-base-200">
+    <%# Drawer de DaisyUI: lg:drawer-open mantiene el sidebar visible en pantallas grandes %>
+    <div class="drawer lg:drawer-open">
+      <%# Toggle invisible para controlar la apertura del menú en dispositivos móviles %>
+      <input id="app-drawer" type="checkbox" class="drawer-toggle" />
+
+      <%# Área de contenido principal (Header, Breadcrumbs, Flash y Vista actual) %>
+      <div class="drawer-content flex flex-col min-h-screen">
+        <%= render "layouts/header" %>
+        <%= render "layouts/breadcrumbs" %>
+
+        <main class="flex-1 p-4 lg:p-6">
+          <%= render "layouts/flash" %>
+          <%= yield %>
+        </main>
+      </div>
+
+      <%# Menú lateral (Sidebar) y fondo oscuro deslizable para pantallas pequeñas %>
+      <div class="drawer-side z-30">
+        <label for="app-drawer" aria-label="Cerrar menú" class="drawer-overlay"></label>
+        <%= render "layouts/sidebar" %>
+      </div>
+    </div>
+  </body>
+</html>
