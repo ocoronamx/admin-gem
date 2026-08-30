@@ -1,0 +1,24 @@
+<% content_for :title, "Nueva contraseña" %>
+
+<div class="card w-full max-w-sm bg-base-100 shadow-xl">
+  <div class="card-body">
+    <h1 class="card-title text-2xl mb-4">Elige una nueva contraseña</h1>
+
+    <%= form_with url: password_path(params[:token]), method: :put do |form| %>
+      <div class="form-control mb-3">
+        <label class="label" for="password"><span class="label-text">Nueva contraseña</span></label>
+        <%= form.password_field :password, required: true, maxlength: 72,
+              autocomplete: "new-password", class: "input input-bordered w-full" %>
+        <span class="label-text-alt text-base-content/60 mt-1">Mínimo 12 caracteres.</span>
+      </div>
+
+      <div class="form-control mb-4">
+        <label class="label" for="password_confirmation"><span class="label-text">Repite la contraseña</span></label>
+        <%= form.password_field :password_confirmation, required: true, maxlength: 72,
+              autocomplete: "new-password", class: "input input-bordered w-full" %>
+      </div>
+
+      <%= form.submit "Guardar", class: "btn btn-primary w-full" %>
+    <% end %>
+  </div>
+</div>

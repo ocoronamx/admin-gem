@@ -1,0 +1,8 @@
+<p>
+  Recibimos una solicitud para restablecer tu contraseña. Puedes crear una nueva desde aquí:
+  <%= link_to "Restablecer contraseña", edit_password_url(@user.password_reset_token) %>.
+</p>
+<p>
+  Este enlace expira en <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>.
+  Si no solicitaste este cambio, puedes ignorar este correo.
+</p>

@@ -40,12 +40,16 @@
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle" aria-label="Cuenta">
         <%= icon(:user_circle, css_class: "size-6") %>
       </div>
-      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box shadow z-10 w-52 mt-2 p-2">
-        <li class="menu-title">Sin sesión (Fase 5)</li>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box shadow z-10 w-56 mt-2 p-2">
+        <li class="menu-title"><%= Current.user.email_address %></li>
         <li>
-          <span class="text-base-content/40 cursor-not-allowed">
-            <%= icon(:arrow_right_on_rectangle) %> Cerrar sesión
-          </span>
+          <%# button_to genera un <form>, así que estilizamos el botón directo
+              en vez de depender del selector .menu > li > a de DaisyUI %>
+          <%= button_to session_path, method: :delete,
+                class: "flex items-center gap-2 w-full text-left rounded-field hover:bg-base-200 px-3 py-2" do %>
+            <%= icon(:arrow_right_on_rectangle, css_class: "size-4") %>
+            <span>Cerrar sesión</span>
+          <% end %>
         </li>
       </ul>
     </div>

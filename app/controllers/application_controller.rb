@@ -30,6 +30,7 @@
 # Maneja configuraciones globales como restricciones de navegador, caching, el layout principal,
 # y la inicialización de preferencias de la interfaz (tema visual y estado de la barra lateral).
 class ApplicationController < ActionController::Base
+  include Authentication
   # Restringe el acceso únicamente a navegadores modernos con soporte completo para tecnologías web recientes.
   allow_browser versions: :modern
 
