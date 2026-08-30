@@ -40,3 +40,6 @@
 # Ignore system files and test coverage reports
 .DS_Store
 /coverage/
+
+# Se regenera en cada build
+app/assets/builds/tailwind.css

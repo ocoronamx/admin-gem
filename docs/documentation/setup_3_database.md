@@ -124,6 +124,6 @@ bundle exec rubocop -a
 * citext en emails previene bypass de unicidad por mayúsculas/minúsculas — relevante en la Fase 5 cuando exista users.email.
 * Password de producción sale de ENV, nunca hardcodeada en database.yml.
 
-## 12-13. Mantenibilidad y compatibilidad futura
+## Mantenibilidad y compatibilidad futura
 
 docs/conventions/database.md responde de antemano las preguntas que un desarrollador nuevo (o tú mismo en 8 meses) se haría al crear una tabla: ¿bigint o UUID?, ¿soft delete?, ¿JSONB o columnas?. La convención de índices concurrentes ya queda escrita antes de que exista una tabla grande, así que en la Fase 12 (Usuarios) o más adelante no hay que inventarla sobre la marcha.

@@ -1,1 +1,102 @@
 @import "tailwindcss";
+
+/* Los .mjs son plugins de build, no plantillas: que Tailwind no los escanee */
+@source not "./daisyui{,*}.mjs";
+
+@plugin "./daisyui.mjs" {
+  themes: light --default, dark --prefersdark;
+}
+
+/*
+ * ============================================================
+ * TOKENS DE MARCA — único lugar que se toca para rebrandear
+ * el sistema completo. Ver docs/design-system.md.
+ * ============================================================
+ */
+@theme {
+  /* Cambiar esta línea es todo lo que hace falta para pasar a
+     una fuente de marca propia (self-hosted) en el futuro. */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Tema claro (sobreescribe el "light" incluido en DaisyUI) */
+@plugin "./daisyui-theme.mjs" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(97% 0.002 247);
+  --color-base-300: oklch(92% 0.004 247);
+  --color-base-content: oklch(21% 0.006 285);
+
+  --color-primary: oklch(45% 0.15 264);
+  --color-primary-content: oklch(97% 0.01 264);
+  --color-secondary: oklch(55% 0.04 255);
+  --color-secondary-content: oklch(98% 0.01 255);
+  --color-accent: oklch(70% 0.14 200);
+  --color-accent-content: oklch(20% 0.05 200);
+  --color-neutral: oklch(30% 0.01 260);
+  --color-neutral-content: oklch(96% 0.005 260);
+
+  --color-info: oklch(65% 0.15 235);
+  --color-info-content: oklch(98% 0.01 235);
+  --color-success: oklch(62% 0.15 155);
+  --color-success-content: oklch(98% 0.02 155);
+  --color-warning: oklch(80% 0.15 85);
+  --color-warning-content: oklch(25% 0.05 85);
+  --color-error: oklch(60% 0.22 25);
+  --color-error-content: oklch(98% 0.02 25);
+
+  /* Look sobrio/empresarial: radios modestos, sombra sutil, sin textura */
+  --radius-selector: 0.375rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* Tema oscuro (sobreescribe el "dark" incluido en DaisyUI) */
+@plugin "./daisyui-theme.mjs" {
+  name: "dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: oklch(19% 0.006 285);
+  --color-base-200: oklch(23% 0.006 285);
+  --color-base-300: oklch(28% 0.007 285);
+  --color-base-content: oklch(93% 0.004 260);
+
+  --color-primary: oklch(70% 0.14 264);
+  --color-primary-content: oklch(20% 0.05 264);
+  --color-secondary: oklch(70% 0.03 255);
+  --color-secondary-content: oklch(20% 0.02 255);
+  --color-accent: oklch(75% 0.13 200);
+  --color-accent-content: oklch(20% 0.05 200);
+  --color-neutral: oklch(85% 0.005 260);
+  --color-neutral-content: oklch(20% 0.01 260);
+
+  --color-info: oklch(72% 0.14 235);
+  --color-info-content: oklch(20% 0.05 235);
+  --color-success: oklch(70% 0.15 155);
+  --color-success-content: oklch(20% 0.05 155);
+  --color-warning: oklch(80% 0.15 85);
+  --color-warning-content: oklch(25% 0.05 85);
+  --color-error: oklch(68% 0.2 25);
+  --color-error-content: oklch(20% 0.05 25);
+
+  --radius-selector: 0.375rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
