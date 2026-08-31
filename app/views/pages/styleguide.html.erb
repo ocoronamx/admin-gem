@@ -88,6 +88,36 @@
     </p>
   </section>
 
+  <section class="card bg-base-100 shadow p-6 space-y-4">
+    <h2 class="font-medium">Formularios (AdminFormBuilder)</h2>
+    <p class="text-sm text-base-content/60 -mt-2">
+      Cada campo trae su fieldset, label y validator-hint solo. El de "Email" fuerza
+      un error de servidor para mostrar el estado inválido en rojo.
+    </p>
+
+    <%= form_with model: @demo_form, url: "#", method: :get do |form| %>
+      <div class="grid sm:grid-cols-2 gap-x-4">
+        <%= form.text_field :name, label: "Nombre" %>
+        <%= form.email_field :email, label: "Email" %>
+      </div>
+
+      <%= form.text_area :bio, label: "Biografía", hint: "Máximo 280 caracteres.", rows: 3 %>
+
+      <div class="grid sm:grid-cols-2 gap-x-4">
+        <%= form.date_field :birthdate, label: "Fecha de nacimiento" %>
+        <%= form.select :country, [ [ "Argentina", "ar" ], [ "México", "mx" ], [ "España", "es" ],
+              [ "Chile", "cl" ], [ "Colombia", "co" ] ], label: "País", include_blank: "Selecciona un país" %>
+      </div>
+
+      <%= form.tom_select :tags, [ [ "Rails", "rails" ], [ "Hotwire", "hotwire" ], [ "Tailwind", "tailwind" ],
+            [ "Pundit", "pundit" ], [ "Postgres", "postgres" ] ], label: "Tecnologías (Tom Select)", multiple: true %>
+
+      <%= form.check_box :newsletter, label: "Quiero recibir noticias por correo" %>
+
+      <%= render "components/button", text: "Enviar (demo, no hace nada)", type: "submit", variant: :primary %>
+    <% end %>
+  </section>
+
   <%= render(layout: "components/modal", locals: { id: "demo_modal", title: "Modal de ejemplo" }) do %>
     <p class="text-base-content/70 mb-4">Contenido del modal, definido con un bloque igual que Card.</p>
     <div class="modal-action">

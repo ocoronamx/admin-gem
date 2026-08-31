@@ -32,17 +32,18 @@ Ahora mismo, visitar /passwords/new o /passwords/edit revienta con Pundit::Autho
 
 ```bash
 bundle add tom-select-rails --version "~> 2.5"
+# Integrate Tom Select with the asset pipeline in Rails.
+
+# gem 'tom-select-rails', '>= 2.5.1'
 ```
 
 ## Archivos
 
-Gemfile — agrega junto a los demás gems de frontend:
+Gemfile — agrega junto a los demás gems de frontend abajo de tailwindcss-rails:
 
 ```ruby
-# Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
-gem "tailwindcss-rails"
-# Selects con búsqueda/tags/multi-selección [https://github.com/tysongach/tom-select-rails]
-gem "tom-select-rails", "~> 2.5"
+# Integrate Tom Select with the asset pipeline in Rails. [https://github.com/tysongach/tom-select-rails]
+gem 'tom-select-rails', '>= 2.5.1'
 ```
 
 config/importmap.rb — agrega:
@@ -67,6 +68,7 @@ config/application.rb — agrega dentro de class Application:
 app/form_builders/admin_form_builder.rb (nuevo — Zeitwerk autoload cualquier app/*, igual que ya pasa con app/policies/, no hace falta tocar autoload_paths):
 
 ```bash
+mkdir 'app/form_builders'
 touch 'app/form_builders/admin_form_builder.rb'
 ```
 
@@ -511,6 +513,7 @@ app/views/pages/styleguide.html.erb — agrega después de la sección de Modal:
 spec/form_builders/admin_form_builder_spec.rb (nuevo, pending — instanciar ActionView::Base a mano para testear un form builder aislado es frágil entre versiones de Rails; lo real y más confiable es la cobertura indirecta vía los request specs de abajo, así que esto queda anotado para Setup 15):
 
 ```bash
+mkdir 'spec/form_builders'
 touch 'spec/form_builders/admin_form_builder_spec.rb'
 ```
 

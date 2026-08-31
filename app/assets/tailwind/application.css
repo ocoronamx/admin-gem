@@ -108,3 +108,98 @@
 [data-sidebar="collapsed"] .sidebar-label {
   display: none;
 }
+
+/*
+ * ============================================================
+ * TOM SELECT — integración visual con los tokens de DaisyUI (Setup 9)
+ * ============================================================
+ * No usamos el theme oficial de tom-select-rails: trae colores fijos que no
+ * responden a --color-* ni a dark/light. Estos selectores corresponden a la
+ * estructura DOM de Tom Select 2.6.x — si una versión futura cambia el
+ * markup interno, ajusta aquí y confirma visualmente en /styleguide.
+ */
+.ts-wrapper.single .ts-control,
+.ts-wrapper.multi .ts-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.5rem;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--color-base-100);
+  border: var(--border, 1px) solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  color: var(--color-base-content);
+  cursor: text;
+}
+
+.ts-wrapper.focus .ts-control {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.ts-wrapper.disabled .ts-control {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ts-control > input {
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: inherit;
+  flex: 1 1 auto;
+  min-width: 4rem;
+}
+
+.ts-control .item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  background-color: var(--color-base-200);
+  border-radius: var(--radius-selector);
+  font-size: 0.8125rem;
+}
+
+.ts-control .item .remove {
+  cursor: pointer;
+  opacity: 0.6;
+  border-left: 0;
+}
+
+.ts-control .item .remove:hover {
+  opacity: 1;
+}
+
+.ts-dropdown {
+  background-color: var(--color-base-100);
+  border: var(--border, 1px) solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  margin-top: 0.25rem;
+  overflow: hidden;
+  z-index: 20;
+}
+
+.ts-dropdown .option {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  color: var(--color-base-content);
+}
+
+.ts-dropdown .option.active {
+  background-color: var(--color-base-200);
+}
+
+.ts-dropdown .option.selected {
+  background-color: var(--color-primary);
+  color: var(--color-primary-content);
+}
+
+.ts-dropdown .no-results,
+.ts-dropdown .create {
+  padding: 0.5rem 0.75rem;
+  color: var(--color-base-content);
+  opacity: 0.6;
+}

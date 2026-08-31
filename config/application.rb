@@ -38,5 +38,11 @@ module AdminGem
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Todo form_with usa AdminFormBuilder sin tener que pasar `builder:` cada
+    # vez (ver app/form_builders/admin_form_builder.rb). String, no la
+    # constante directa: el autoloader todavía no está listo cuando este
+    # archivo se evalúa.
+    config.action_view.default_form_builder = "AdminFormBuilder"
   end
 end
