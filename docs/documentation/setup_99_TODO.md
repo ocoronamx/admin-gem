@@ -1,7 +1,6 @@
 # TASKS TO DO
 
 ## DONE:
-
 * Setup 0  — Arquitectura                    hecho
 * Setup 1  — Preparación de entorno          hecho
 * Setup 2  — Inicialización Rails            hecho (admin-gem, Ruby 3.4.10, Rails 8.1, PG 17)
@@ -10,14 +9,12 @@
 * Setup 5  — Layout administrativo           hecho (sidebar, header, breadcrumbs, mobile nav)
 * Setup 6  — Authentication                  (generador nativo Rails 8 + hardening)
 * Setup 7  — Authorization                   (Pundit + Role/Permission)
-
-## CURRENT:
-
 * Setup 8  — Components                      (partials/helpers/Stimulus del design system)
 
-## TODO:
-
+## CURRENT:
 * Setup 9  — Forms                           (form builder, Tom Select, inputs nativos de fecha)
+
+## TODO:
 * Setup 10 — Tables / Filtros / Pagy         (tabla reutilizable, filtros por allowlist)
 * Setup 11 — Charts                          (wrapper ApexCharts v6.x)
 * Setup 12 — Dashboard                       (demo data, claramente marcada)
