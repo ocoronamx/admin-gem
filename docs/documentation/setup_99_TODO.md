@@ -13,7 +13,7 @@
 
 ## CURRENT:
 
-* Setup 8  — Componentes                     (partials/helpers/Stimulus del design system)
+* Setup 8  — Components                      (partials/helpers/Stimulus del design system)
 
 ## TODO:
 

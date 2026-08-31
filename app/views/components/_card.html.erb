@@ -1,0 +1,16 @@
+<%
+  title       = local_assigns[:title]
+  actions     = local_assigns[:actions]
+  extra_class = local_assigns.fetch(:class, "")
+%>
+<div class="card bg-base-100 shadow <%= extra_class %>">
+  <div class="card-body">
+    <% if title || actions %>
+      <div class="flex items-center justify-between mb-2">
+        <% if title %><h2 class="card-title"><%= title %></h2><% end %>
+        <% if actions %><div class="flex gap-2"><%= actions %></div><% end %>
+      </div>
+    <% end %>
+    <%= yield %>
+  </div>
+</div>

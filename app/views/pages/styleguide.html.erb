@@ -47,4 +47,51 @@
       <% end %>
     </div>
   </section>
+
+  <section class="card bg-base-100 shadow p-6 space-y-3">
+    <h2 class="font-medium">Card (render layout:, contenido libre)</h2>
+    <%= render(layout: "components/card", locals: { title: "Ejemplo" }) do %>
+      <p class="text-base-content/70">Este contenido viene de un bloque, no de un local.</p>
+    <% end %>
+  </section>
+
+  <section class="card bg-base-100 shadow p-6 space-y-3">
+    <h2 class="font-medium">Alertas</h2>
+    <%= render "components/alert", variant: :info, message: "Esto es información." %>
+    <%= render "components/alert", variant: :success, message: "La operación fue exitosa." %>
+    <%= render "components/alert", variant: :warning, message: "Revisa esto antes de continuar." %>
+    <%= render "components/alert", variant: :error, message: "Algo salió mal.", dismissible: true %>
+  </section>
+
+  <section class="card bg-base-100 shadow p-6 space-y-3">
+    <h2 class="font-medium">Badges de estado (helper, no partial)</h2>
+    <div class="flex gap-2">
+      <%= status_badge("Activo", variant: :success) %>
+      <%= status_badge("Inactivo", variant: :neutral) %>
+    </div>
+  </section>
+
+  <section class="card bg-base-100 shadow p-6 space-y-3">
+    <h2 class="font-medium">Empty state</h2>
+    <%= render "components/empty_state", title: "Sin catálogos todavía",
+          description: "Cuando exista el módulo, aquí se listarán.", icon: :squares_2x2 %>
+  </section>
+
+  <section class="card bg-base-100 shadow p-6 space-y-3">
+    <h2 class="font-medium">Modal</h2>
+    <button class="btn" data-controller="modal" data-modal-id-value="demo_modal" data-action="modal#open">
+      Abrir modal
+    </button>
+    <p class="text-xs text-base-content/50 mt-2">
+      Los diálogos de confirmación (<code>data: { turbo_confirm: "..." }</code>) usan el mismo
+      mecanismo de <code>&lt;dialog&gt;</code> — se verán en acción en Setup 10 con "Eliminar".
+    </p>
+  </section>
+
+  <%= render(layout: "components/modal", locals: { id: "demo_modal", title: "Modal de ejemplo" }) do %>
+    <p class="text-base-content/70 mb-4">Contenido del modal, definido con un bloque igual que Card.</p>
+    <div class="modal-action">
+      <form method="dialog"><button class="btn">Cerrar</button></form>
+    </div>
+  <% end %>
 </div>

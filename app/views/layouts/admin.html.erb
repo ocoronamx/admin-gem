@@ -37,6 +37,16 @@
         <label for="app-drawer" aria-label="Cerrar menú" class="drawer-overlay"></label>
         <%= render "layouts/sidebar" %>
       </div>
+      <dialog id="turbo_confirm_dialog" class="modal">
+        <div class="modal-box">
+          <h3 class="text-lg font-semibold mb-2">Confirmar acción</h3>
+          <p class="text-base-content/70 mb-6" data-turbo-confirm-message></p>
+          <div class="modal-action">
+            <button type="button" class="btn" data-turbo-confirm-cancel>Cancelar</button>
+            <button type="button" class="btn btn-error" data-turbo-confirm-accept>Confirmar</button>
+          </div>
+        </div>
+      </dialog>
     </div>
   </body>
 </html>

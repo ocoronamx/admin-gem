@@ -4,8 +4,5 @@
   y les aplica dinámicamente las clases de color correspondientes de DaisyUI.
 %>
 <% flash.each do |type, message| %>
-  <%# Mapea el tipo de mensaje a una clase CSS de DaisyUI (ej. alert-success, alert-error) %>
-  <div class="alert <%= flash_alert_class(type) %> shadow-sm mb-4" role="alert">
-    <span><%= message %></span>
-  </div>
+  <%= render "components/alert", variant: flash_alert_variant(type), message: message, dismissible: true, class: "mb-4" %>
 <% end %>

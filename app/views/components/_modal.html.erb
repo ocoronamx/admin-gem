@@ -1,0 +1,15 @@
+<%
+  id    = local_assigns.fetch(:id)
+  title = local_assigns[:title]
+%>
+<dialog id="<%= id %>" class="modal">
+  <div class="modal-box">
+    <% if title %>
+      <h3 class="text-lg font-semibold mb-4"><%= title %></h3>
+    <% end %>
+    <%= yield %>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>cerrar</button>
+  </form>
+</dialog>

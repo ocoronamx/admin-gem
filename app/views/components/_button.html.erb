@@ -1,0 +1,41 @@
+<%
+  text        = local_assigns.fetch(:text)
+  variant     = local_assigns.fetch(:variant, :primary)
+  size        = local_assigns.fetch(:size, :md)
+  href        = local_assigns[:href]
+  method      = local_assigns[:method]
+  confirm     = local_assigns[:confirm]
+  disabled    = local_assigns.fetch(:disabled, false)
+  loading     = local_assigns.fetch(:loading, false)
+  icon_name   = local_assigns[:icon]
+  extra_class = local_assigns.fetch(:class, "")
+  type        = local_assigns.fetch(:type, "button")
+
+  variant_class = {
+    primary: "btn-primary", secondary: "btn-secondary", outline: "btn-outline",
+    ghost: "btn-ghost", error: "btn-error", neutral: "btn-neutral"
+  }.fetch(variant.to_sym, "btn-primary")
+
+  size_class = { sm: "btn-sm", md: "", lg: "btn-lg" }.fetch(size.to_sym, "")
+  classes = ["btn", variant_class, size_class, extra_class].reject(&:blank?).join(" ")
+%>
+
+<% if href %>
+  <%= link_to href, class: classes, data: { turbo_method: method, turbo_confirm: confirm }.compact do %>
+    <% if loading %>
+      <span class="loading loading-spinner loading-sm"></span>
+    <% elsif icon_name %>
+      <%= icon(icon_name, css_class: "size-4") %>
+    <% end %>
+    <%= text %>
+  <% end %>
+<% else %>
+  <button type="<%= type %>" class="<%= classes %>" <%= "disabled" if disabled || loading %>>
+    <% if loading %>
+      <span class="loading loading-spinner loading-sm"></span>
+    <% elsif icon_name %>
+      <%= icon(icon_name, css_class: "size-4") %>
+    <% end %>
+    <%= text %>
+  </button>
+<% end %>
