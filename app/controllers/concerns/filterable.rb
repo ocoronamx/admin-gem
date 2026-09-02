@@ -1,31 +1,34 @@
-# Filtrado de tablas administrativas por lista blanca (ver ADR §8: nada de
-# "filtrado mágico" tipo Ransack). `filterable_by` declara qué *scopes* puede
-# invocar el controlador — nunca columnas crudas — así que cualquier otra
-# clave en params[:q] se descarta acá, antes de tocar la base de datos.
+# Filtrado de tablas administrativas por lista blanca (ADR: nada de "filtrado
+# mágico" tipo Ransack). `filterable_by` mapea la clave pública de params[:q]
+# al scope que la resuelve — nunca al revés. Cualquier clave que no esté en
+# ese mapa se descarta acá, antes de tocar la base de datos.
 module Filterable
   extend ActiveSupport::Concern
 
   included do
-    class_attribute :filterable_scopes, default: []
+    class_attribute :filterable_scopes, default: {}
   end
 
   class_methods do
-    # Cada símbolo debe ser también el nombre de un scope en el modelo que
-    # este controlador filtra (filterable_by :by_name requiere que el modelo
-    # defina scope :by_name).
-    def filterable_by(*scopes)
-      self.filterable_scopes = scopes.map(&:to_sym)
+    # filterable_by(name: :by_name, key: :by_key) acepta ?q[name]=... y
+    # llama Role.by_name(...) — la clave pública no tiene que llamarse igual
+    # que el scope.
+    def filterable_by(mapping)
+      self.filterable_scopes = mapping.symbolize_keys
     end
   end
 
   private
 
   def apply_filters(scope)
-    filter_params.each { |name, value| scope = scope.public_send(name, value) if value.present? }
+    filter_params.each do |key, value|
+      scope_method = filterable_scopes[key]
+      scope = scope.public_send(scope_method, value) if scope_method && value.present?
+    end
     scope
   end
 
   def filter_params
-    params.fetch(:q, ActionController::Parameters.new).to_unsafe_h.symbolize_keys.slice(*filterable_scopes)
+    params.fetch(:q, ActionController::Parameters.new).to_unsafe_h.symbolize_keys.slice(*filterable_scopes.keys)
   end
 end
