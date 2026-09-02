@@ -11,12 +11,12 @@
 * Setup 7  — Authorization                   (Pundit + Role/Permission)
 * Setup 8  — Components                      (partials/helpers/Stimulus del design system)
 * Setup 9  — Forms                           (form builder, Tom Select, inputs nativos de fecha)
-
-## CURRENT:
 * Setup 10 — Tables / Filtros / Pagy         (tabla reutilizable, filtros por allowlist)
 
-## TODO:
+## CURRENT:
 * Setup 11 — Charts                          (wrapper ApexCharts v6.x)
+
+## TODO:
 * Setup 12 — Dashboard                       (demo data, claramente marcada)
 * Setup 13 — Usuarios                        (módulo de referencia)
 * Setup 14 — Auditoría                       (Auditable concern + AuditLog propio)

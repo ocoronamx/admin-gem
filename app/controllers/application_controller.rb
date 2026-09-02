@@ -4,6 +4,8 @@
 class ApplicationController < ActionController::Base
   include Authentication
   include Pundit::Authorization
+  include Pagy::Method
+  include Filterable
 
   # Restringe el acceso únicamente a navegadores modernos con soporte completo para tecnologías web recientes.
   allow_browser versions: :modern

@@ -1,0 +1,42 @@
+<% content_for :title, "Roles" %>
+
+<h1 class="text-2xl font-semibold mb-4">Roles</h1>
+
+<%= render(layout: "components/card") do %>
+  <%= form_with url: roles_path, method: :get do |form| %>
+    <div class="flex flex-wrap items-end gap-3 mb-4">
+      <div class="w-48">
+        <%= form.text_field :name, label: "Nombre", value: params.dig(:q, :name),
+              placeholder: "Buscar...", name: "q[name]" %>
+      </div>
+      <div class="w-48">
+        <%= form.text_field :key, label: "Clave", value: params.dig(:q, :key),
+              placeholder: "Buscar...", name: "q[key]" %>
+      </div>
+      <%= render "components/button", text: "Filtrar", type: "submit", variant: :outline %>
+      <% if params[:q].present? %>
+        <%= render "components/button", text: "Limpiar", href: roles_path, variant: :ghost %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= render "components/table",
+        records: @roles,
+        empty_title: "Sin roles que coincidan",
+        empty_description: "Ajusta o limpia los filtros.",
+        columns: [
+          { label: "Nombre", attribute: :name },
+          { label: "Clave", attribute: :key },
+          { label: "Permisos", format: ->(role) { role.permissions.count } },
+          { label: "Usuarios", format: ->(role) { role.users.count } }
+        ] %>
+
+  <div class="flex items-center justify-between mt-4">
+    <p class="text-sm text-base-content/60"><%== @pagy.info_tag %></p>
+    <%== @pagy.series_nav(
+      nav_extra: 'class="join"',
+      link_extra: 'class="join-item btn btn-sm"',
+      active_link_extra: 'class="join-item btn btn-sm btn-active"'
+    ) %>
+  </div>
+<% end %>

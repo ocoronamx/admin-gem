@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ApplicationPolicy
-  # include PermissionResource
+  include PermissionResource
 
   attr_reader :user, :record
 
@@ -39,7 +39,7 @@ class ApplicationPolicy
   end
 
   class Scope
-    # include PermissionResource
+    include PermissionResource
 
     attr_reader :user, :scope
 

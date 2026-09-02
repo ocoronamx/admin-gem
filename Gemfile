@@ -23,6 +23,12 @@ gem "stimulus-rails"
 gem "tailwindcss-rails"
 # Integrate Tom Select with the asset pipeline in Rails.
 gem "tom-select-rails", ">= 2.5.1"
+# Object oriented authorization for Rails applications
+gem "pundit", "~> 2.5"
+# Agnostic pagination in plain ruby.
+# Paginación [https://ddnexus.github.io/pagy] — fijado en el ADR: rediseño
+# total en la v43 ("leap version"), API distinta a cualquier tutorial pre-43.
+gem "pagy", "~> 43.0"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"
@@ -77,5 +83,3 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 end
-
-gem "pundit", "~> 2.5"
