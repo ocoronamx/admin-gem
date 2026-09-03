@@ -24,7 +24,21 @@ Wrapper de ApexCharts v6.x (`chart_tag` + `chart_controller.js`) que lee su pale
 ## Comandos
 
 ```bash
-bin/importmap pin apexcharts
+bin/importmap pin apexcharts@6.10.0
+bin/importmap pin tom-select@2.6.2
+```
+
+```bash
+# 1. Reemplaza el archivo modular por el bundle UMD completo
+curl -o vendor/javascript/tom-select.js \
+  "https://unpkg.com/tom-select@2.6.2/dist/js/tom-select.complete.min.js"
+
+# 2. Conviértelo en ES module: el UMD deja el valor en `globalThis.TomSelect`,
+#    solo hace falta exportarlo
+echo 'export default globalThis.TomSelect;' >> vendor/javascript/tom-select.js
+
+# 3. Ya no necesitas los paquetes que jspm agregó para la versión modular
+rm vendor/javascript/@orchidjs--sifter.js vendor/javascript/@orchidjs--unicode-variants.js
 ```
 
 ## Archivos
@@ -32,11 +46,17 @@ bin/importmap pin apexcharts
 **config/importmap.rb** — agrega (el pin de `apexcharts` lo escribe el comando de arriba; `charts/theme_colors` es manual, mismo patrón que `pin "application"` — resuelve a `app/javascript/charts/theme_colors.js` sin necesitar `to:`):
 
 ```ruby
+# Pin npm packages by running ./bin/importmap
+
+pin "application"
+pin "@hotwired/turbo-rails", to: "turbo.min.js"
+pin "@hotwired/stimulus", to: "stimulus.min.js"
+pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
 pin_all_from "app/javascript/controllers", under: "controllers"
 pin "turbo_confirm"
-pin "tom-select"
-pin "apexcharts"
+pin "tom-select" # @2.6.2 — UMD vendored a mano (unpkg), no el build modular de jspm
 pin "charts/theme_colors"
+pin "apexcharts" # @6.10.0
 ```
 
 **app/javascript/charts/theme_colors.js** (nuevo):
