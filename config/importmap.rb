@@ -7,4 +7,5 @@ pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
 pin_all_from "app/javascript/controllers", under: "controllers"
 pin "turbo_confirm"
 pin "tom-select"
-pin "charts/theme_colors"pin "apexcharts" # @6.10.0
+pin "charts/theme_colors"
+pin "apexcharts" # @6.10.0
