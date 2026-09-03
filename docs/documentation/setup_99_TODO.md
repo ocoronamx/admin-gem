@@ -12,12 +12,12 @@
 * Setup 8  — Components                      (partials/helpers/Stimulus del design system)
 * Setup 9  — Forms                           (form builder, Tom Select, inputs nativos de fecha)
 * Setup 10 — Tables / Filtros / Pagy         (tabla reutilizable, filtros por allowlist)
-
-## CURRENT:
 * Setup 11 — Charts                          (wrapper ApexCharts v6.x)
 
-## TODO:
+## CURRENT:
 * Setup 12 — Dashboard                       (demo data, claramente marcada)
+
+## TODO:
 * Setup 13 — Usuarios                        (módulo de referencia)
 * Setup 14 — Auditoría                       (Auditable concern + AuditLog propio)
 * Setup 15 — Testing                         (RSpec, factories, qué probar y qué no)
