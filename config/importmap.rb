@@ -6,8 +6,6 @@ pin "@hotwired/stimulus", to: "stimulus.min.js"
 pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
 pin_all_from "app/javascript/controllers", under: "controllers"
 pin "turbo_confirm"
-pin "tom-select" # @2.6.2
+pin "tom-select" # @2.6.2 — UMD vendored a mano (unpkg), no el build modular de jspm
 pin "charts/theme_colors"
 pin "apexcharts" # @6.10.0
-pin "@orchidjs/sifter", to: "@orchidjs--sifter.js" # @1.1.0
-pin "@orchidjs/unicode-variants", to: "@orchidjs--unicode-variants.js" # @1.1.2
