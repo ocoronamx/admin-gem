@@ -7,5 +7,9 @@ export default class extends Controller {
     const theme = event.target.checked ? "dark" : "light"
     document.cookie = `theme=${theme}; path=/; max-age=31536000; samesite=lax`
     document.documentElement.setAttribute("data-theme", theme)
+
+    // Cualquier chart en pantalla (chart_controller.js) escucha esto para
+    // releerse los colores del tema nuevo y repintarse solo.
+    window.dispatchEvent(new CustomEvent("theme:change"))
   }
 }
