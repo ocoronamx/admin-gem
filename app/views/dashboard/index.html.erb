@@ -2,6 +2,10 @@
 
 <h1 class="text-2xl font-semibold mb-4">Dashboard</h1>
 
+<% if policy(User).new? %>
+<% end %>
+<% if policy(User).edit? || policy(User).toggle_active? %>
+<% end %>
 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
   <div class="card bg-base-100 shadow p-5">
     <p class="text-sm text-base-content/60">Usuarios</p>

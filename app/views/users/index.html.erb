@@ -3,36 +3,40 @@
 <h1 class="text-2xl font-semibold mb-4">Usuarios</h1>
 
 <%= render(layout: "components/card") do %>
-  <div class="flex items-center justify-between mb-4 gap-3">
-    <%= form_with url: users_path, method: :get do |form| %>
-      <div class="w-64">
-        <%= form.text_field :email, label: "Correo", value: params.dig(:q, :email),
-              placeholder: "Buscar...", name: "q[email]" %>
-      </div>
+    <div class="flex items-center justify-between mb-4 gap-3">
+        <%= form_with url: users_path, method: :get do |form| %>
+        <div class="w-64">
+            <%= form.text_field :email, label: "Correo", value: params.dig(:q, :email),
+                    placeholder: "Buscar...", name: "q[email]" %>
+        </div>
+        <% end %>
+        <% if policy(User).new? %>
+            <%= render "components/button", text: "Nuevo usuario", href: new_user_path, variant: :primary %>
+        <% end %>
+    </div>
+  
+    <% component_table_columns = [
+        { label: "Correo", attribute: :email_address },
+        { label: "Rol", format: ->(u) { u.role.name } },
+        { label: "Estado", format: ->(u) {
+            u.active? ? content_tag(:span, "Activo", class: "badge badge-success badge-sm")
+                        : content_tag(:span, "Desactivado", class: "badge badge-ghost badge-sm")
+            } }
+    ] %>
+    <% if policy(User).edit? || policy(User).toggle_active? %>
+        <% component_table_columns << { label: "", format: ->(u) { render "users/actions", user: u } } %>
     <% end %>
-    <% if policy(User).new? %>
-      <%= render "components/button", text: "Nuevo usuario", href: new_user_path, variant: :primary %>
-    <% end %>
-  </div>
 
-  <%= render "components/table",
+    <%= render "components/table",
         records: @users,
         empty_title: "Sin usuarios que coincidan",
-        columns: [
-          { label: "Correo", attribute: :email_address },
-          { label: "Rol", format: ->(u) { u.role.name } },
-          { label: "Estado", format: ->(u) {
-              u.active? ? content_tag(:span, "Activo", class: "badge badge-success badge-sm")
-                        : content_tag(:span, "Desactivado", class: "badge badge-ghost badge-sm")
-            } },
-          { label: "", format: ->(u) { render "users/actions", user: u } }
-        ] %>
+        columns: component_table_columns %>
 
-  <div class="flex items-center justify-between mt-4">
-    <p class="text-sm text-base-content/60"><%== @pagy.info_tag %></p>
-    <%== @pagy.series_nav(
-      nav_extra: 'class="join"', link_extra: 'class="join-item btn btn-sm"',
-      active_link_extra: 'class="join-item btn btn-sm btn-active"'
-    ) %>
-  </div>
+    <div class="flex items-center justify-between mt-4">
+        <p class="text-sm text-base-content/60"><%== @pagy.info_tag %></p>
+        <%== @pagy.series_nav(
+            nav_extra: 'class="join"', link_extra: 'class="join-item btn btn-sm"',
+            active_link_extra: 'class="join-item btn btn-sm btn-active"'
+        ) %>
+    </div>
 <% end %>

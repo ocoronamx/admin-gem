@@ -6,11 +6,15 @@
 <%
   nav_items = [
     { label: "Inicio", icon: :home, path: root_path, available: true },
-    { label: "Roles", icon: :key, path: roles_path, available: true },
-    { label: "Usuarios", icon: :users, path: users_path, available: true },
-    { label: "Catálogos", icon: :squares_2x2, path: nil, available: false },
-    { label: "Configuración", icon: :cog_6_tooth, path: nil, available: false }
   ]
+  if policy(Role).show?
+    nav_items << { label: "Roles", icon: :key, path: roles_path, available: true }
+  end
+  if policy(User).show?
+    nav_items << { label: "Usuarios", icon: :users, path: users_path, available: true }
+  end
+  nav_items << { label: "Catálogos", icon: :squares_2x2, path: nil, available: false }
+  nav_items << { label: "Configuración", icon: :cog_6_tooth, path: nil, available: false }
 %>
 <aside id="app-sidebar" class="menu bg-base-100 border-r border-base-300 min-h-full w-64 p-3 flex flex-col gap-1 transition-[width] duration-200 overflow-hidden">
   <%# Identidad visual de la aplicación / Logo corporativo %>

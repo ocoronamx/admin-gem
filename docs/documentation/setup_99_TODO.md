@@ -14,12 +14,12 @@
 * Setup 10 — Tables / Filtros / Pagy         (tabla reutilizable, filtros por allowlist)
 * Setup 11 — Charts                          (wrapper ApexCharts v6.x)
 * Setup 12 — Dashboard                       (demo data, claramente marcada)
-
-## CURRENT:
 * Setup 13 — Usuarios                        (módulo de referencia)
 
-## TODO:
+## CURRENT:
 * Setup 14 — Auditoría                       (Auditable concern + AuditLog propio)
+
+## TODO:
 * Setup 15 — Testing                         (RSpec, factories, qué probar y qué no)
 * Setup 16 — Security hardening              (CSP, headers, Brakeman en CI)
 * Setup 17 — CI/CD                           (GitHub Actions: lint → security → tests → build)
