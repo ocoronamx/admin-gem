@@ -127,6 +127,8 @@ RSpec.describe "Dashboard", type: :request do
 end
 ```
 
+
+
 **docs/documentation/setup_99_TODO.md** — mueve Setup 12 a hecho, Setup 13 a CURRENT:
 
 ```markdown

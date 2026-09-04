@@ -39,9 +39,10 @@ Nunca agregues a `filterable_by` un scope que no valide/escape su propio input.
 ## Cómo se ve en un controlador nuevo (ej. Setup 13, Usuarios)
 ```ruby
 class UsersController < ApplicationController
-  filterable_by :by_email
+  filterable_by email: :by_email
 
   def index
+    authorize User
     @pagy, @users = pagy(:offset, apply_filters(policy_scope(User)).order(:email_address))
   end
 end

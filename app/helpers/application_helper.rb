@@ -10,10 +10,8 @@ module ApplicationHelper
   #   flash_alert_class(:success)  #=> "alert-success"
   #   flash_alert_class("notice")  #=> "alert-info"
   #   flash_alert_class(:unknown) #=> "alert-info"
-  module ApplicationHelper
-    def flash_alert_variant(type)
-      { "notice" => :info, "success" => :success, "alert" => :error, "error" => :error, "warning" => :warning }
-        .fetch(type.to_s, :info)
-    end
+  def flash_alert_variant(type)
+    { "notice" => :info, "success" => :success, "alert" => :error, "error" => :error, "warning" => :warning }
+      .fetch(type.to_s, :info)
   end
 end
