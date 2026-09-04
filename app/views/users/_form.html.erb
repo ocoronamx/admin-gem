@@ -1,0 +1,23 @@
+<%= form_with model: user, class: "space-y-1" do |form| %>
+  <%= form.email_field :email_address, label: "Correo", required: true, autofocus: true,
+        autocomplete: "email" %>
+
+  <%= form.password_field :password,
+        label: user.new_record? ? "Contraseña" : "Nueva contraseña",
+        required: user.new_record?, maxlength: 72, autocomplete: "new-password",
+        hint: user.new_record? ? "Mínimo 12 caracteres." : "Dejar en blanco para no cambiarla." %>
+
+  <%= form.password_field :password_confirmation, label: "Repite la contraseña",
+        required: user.new_record?, maxlength: 72, autocomplete: "new-password" %>
+
+  <% if user == Current.user %>
+    <div class="fieldset w-full">
+      <label class="label">Rol</label>
+      <p class="text-sm text-base-content/60">No podés cambiar tu propio rol desde acá.</p>
+    </div>
+  <% else %>
+    <%= form.select :role_id, Role.order(:name).pluck(:name, :id), { label: "Rol" }, { include_blank: false } %>
+  <% end %>
+
+  <%= form.submit user.new_record? ? "Crear usuario" : "Guardar cambios", class: "btn btn-primary w-full mt-2" %>
+<% end %>

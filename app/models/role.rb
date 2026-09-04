@@ -10,6 +10,7 @@ class Role < ApplicationRecord
   # usuario para que no altere el patrón (ver Filterable).
   scope :by_name, ->(value) { where("name ILIKE ?", "%#{sanitize_sql_like(value)}%") }
   scope :by_key,  ->(value) { where("key ILIKE ?", "%#{sanitize_sql_like(value)}%") }
+  scope :by_email, ->(value) { where("email_address ILIKE ?", "%#{sanitize_sql_like(value)}%") }
 
   def permits?(key)
     permission_keys.include?(key.to_s)

@@ -24,3 +24,9 @@ Sin granularidad extra a propósito. Si un módulo concreto la necesita
 ## Gestión de roles/permisos desde la UI
 No existe todavía — por ahora se siembran en `db/seeds.rb`. Candidato natural
 para el módulo "Configuración" cuando exista.
+
+## Autoprotección ("no podés hacerte esto a vos mismo")
+Cuando una acción no debería poder aplicarse a la propia cuenta (desactivarte,
+cambiarte el rol), la regla vive en la policy (`record != user`), nunca en un
+`if` suelto en el controlador. La vista consulta la policy para directamente
+no mostrar la opción — no solo para bloquear el submit. Ver `UserPolicy#toggle_active?`.

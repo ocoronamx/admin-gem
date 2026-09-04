@@ -28,10 +28,11 @@ module Authentication
     def find_session_by_cookie
       return unless cookies.signed[:session_id]
 
-      Session.find_by(id: cookies.signed[:session_id])&.tap do |session|
-        # Throttleado a 1 escritura/hora por sesión — no en cada request.
-        session.touch(:updated_at) if session.updated_at < 1.hour.ago
-      end
+      session = Session.find_by(id: cookies.signed[:session_id])
+      return unless session&.user&.active?
+
+      # Throttleado a 1 escritura/hora por sesión — no en cada request.
+      session.tap { |s| s.touch(:updated_at) if s.updated_at < 1.hour.ago }
     end
 
     def request_authentication

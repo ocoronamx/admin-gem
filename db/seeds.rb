@@ -39,5 +39,10 @@ if User.none?
   end
 
   guest_role = Role.find_by!(key: "guest")
-  User.create!(email_address: 'guest@example.com', password: 'password123456', role: guest_role)
+  User.create!(email_address: "guest@example.com", password: "password123456", role: guest_role)
+
+  # Un usuario desactivado de entrada, para ver el estado "Desactivado" sin
+  # tener que desactivar a alguien a mano primero.
+  User.create!(email_address: "desactivado@example.com", password: "password123456",
+               role: guest_role, deactivated_at: Time.current)
 end

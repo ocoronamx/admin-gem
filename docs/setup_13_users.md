@@ -1,92 +1,3 @@
-Buen hallazgo — y tiene sentido que te resultara raro. Vamos a ver qué pasa exactamente.# De paso: cerrando el hallazgo de Roles
-
-Justo lo que sospechabas: `RolesController#index` nunca llama `authorize`, solo `policy_scope`. Y `verify_pundit_authorization` (Setup 7) solo exige `verify_policy_scoped` para `index` — nunca pide `verify_authorized`. Así que Pundit queda conforme apenas se llama `policy_scope(Role)`, sin importar qué devuelva. Un usuario sin `roles.view` entra a `/roles`, `RolePolicy::Scope#resolve` le da `scope.none`, y ve una página vacía en vez de un rechazo — dos cosas muy distintas para quien lo usa (¿no hay roles, o no tengo permiso?).
-
-Para un recurso admin como Roles, la denegación explícita es el comportamiento correcto — coherente con cómo ya se comportan `show?`/`create?`/etc. Se arregla agregando `authorize` además de `policy_scope`:
-
-**app/controllers/roles_controller.rb**:
-```ruby
-class RolesController < ApplicationController
-  filterable_by name: :by_name, key: :by_key
-
-  def index
-    authorize Role
-    scope = apply_filters(policy_scope(Role)).order(:name)
-    @pagy, @roles = pagy(:offset, scope)
-  end
-end
-```
-
-**docs/conventions/tables.md** — actualiza el ejemplo para que Usuarios (y cualquier módulo futuro) nazca con el patrón correcto:
-
-```ruby
-class UsersController < ApplicationController
-  filterable_by email: :by_email
-
-  def index
-    authorize User
-    @pagy, @users = pagy(:offset, apply_filters(policy_scope(User)).order(:email_address))
-  end
-end
-```
-
-**spec/requests/roles_spec.rb** — agrega el caso que faltaba:
-
-```ruby
-require "rails_helper"
-
-RSpec.describe "Roles", type: :request do
-  describe "GET /index" do
-    context "cuando el usuario está autenticado" do
-      let(:role) do
-        Role.create!(name: "Super Administrador", key: "super_admin").tap do |role|
-          role.permissions << Permission.create!(key: "roles.view")
-        end
-      end
-
-      let(:user) do
-        User.create!(
-          email_address: "admin@example.com",
-          password: "password123456",
-          role: role
-        )
-      end
-
-      before do
-        post session_path, params: {
-          email_address: user.email_address,
-          password: user.password
-        }
-      end
-
-      it "returns http success" do
-        get roles_path
-        expect(response).to have_http_status(:success)
-      end
-    end
-
-    context "cuando no hay usuario autenticado" do
-      it "redirige a iniciar sesión" do
-        get roles_path
-        expect(response).to redirect_to(new_session_path)
-      end
-    end
-
-    it "rechaza a un usuario autenticado sin permiso roles.view" do
-      user = create(:user, email_address: "foo@example.com", password: "password123456",
-                    role: create(:role, name: "Sin permisos", key: "sin_permisos"))
-      post session_path, params: { email_address: user.email_address, password: user.password }
-
-      get roles_path
-
-      expect(response).to redirect_to(root_path)
-    end
-  end
-end
-```
-
----
-
 # Setup 13 — Usuarios (módulo de referencia)
 
 ## Objetivo
@@ -155,6 +66,10 @@ end
 
 **app/policies/user_policy.rb** (nuevo):
 
+```bash
+bin/rails generate pundit:policy User
+```
+
 ```ruby
 class UserPolicy < ApplicationPolicy
   # No podés desactivarte/reactivarte a vos mismo — evita autobloquearte el
@@ -170,6 +85,10 @@ end
 ```
 
 **app/controllers/users_controller.rb** (nuevo):
+
+```bash
+bin/rails generate controller users
+```
 
 ```ruby
 class UsersController < ApplicationController
@@ -292,6 +211,10 @@ scope :by_email, ->(value) { where("email_address ILIKE ?", "%#{sanitize_sql_lik
 
 **app/views/users/_form.html.erb** (nuevo):
 
+```bash
+touch app/views/users/_form.html.erb
+```
+
 ```erb
 <%= form_with model: user, class: "space-y-1" do |form| %>
   <%= form.email_field :email_address, label: "Correo", required: true, autofocus: true,
@@ -320,6 +243,10 @@ scope :by_email, ->(value) { where("email_address ILIKE ?", "%#{sanitize_sql_lik
 
 **app/views/users/_actions.html.erb** (nuevo):
 
+```bash
+touch app/views/users/_actions.html.erb
+```
+
 ```erb
 <div class="flex items-center gap-2 justify-end">
   <%= link_to "Editar", edit_user_path(user), class: "link link-hover text-sm" %>
@@ -332,6 +259,10 @@ scope :by_email, ->(value) { where("email_address ILIKE ?", "%#{sanitize_sql_lik
 ```
 
 **app/views/users/index.html.erb** (nuevo):
+
+```bash
+touch app/views/users/index.html.erb
+```
 
 ```erb
 <% content_for :title, "Usuarios" %>
@@ -376,6 +307,10 @@ scope :by_email, ->(value) { where("email_address ILIKE ?", "%#{sanitize_sql_lik
 
 **app/views/users/new.html.erb** (nuevo):
 
+```bash
+touch app/views/users/new.html.erb
+```
+
 ```erb
 <% content_for :title, "Nuevo usuario" %>
 
@@ -387,6 +322,10 @@ scope :by_email, ->(value) { where("email_address ILIKE ?", "%#{sanitize_sql_lik
 ```
 
 **app/views/users/edit.html.erb** (nuevo):
+
+```bash
+touch app/views/users/edit.html.erb
+```
 
 ```erb
 <% content_for :title, "Editar usuario" %>

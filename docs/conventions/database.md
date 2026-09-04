@@ -26,9 +26,13 @@
 - Nunca como sustituto de columnas/relaciones cuando el dato tiene forma conocida.
 
 ## Soft delete
-- No hay mecanismo genérico. Cada módulo que necesite "desactivar sin borrar"
-  añade su propia columna explícita (ej. `deactivated_at:datetime`) y sus
-  propios scopes (`active`, `deactivated`). Ver Usuarios (Fase 12) como referencia.
+No hay mecanismo genérico — cada módulo que necesite "desactivar sin borrar" añade
+su propia columna explícita y sus propios scopes. Referencia real: Usuarios (Setup 13):
+- Columna `deactivated_at:datetime`, nil = activo.
+- `scope :active` / `scope :deactivated` en el modelo, método `active?`.
+- La sesión de un usuario desactivado se corta en el próximo request, no solo
+  se bloquea el próximo login (`Authentication#find_session_by_cookie`).
+- Nunca un mensaje que distinga "no existe" de "está desactivado" en el login.
 
 ## Migraciones
 - Una migración = un cambio conceptual. No mezclar cambio de esquema con
