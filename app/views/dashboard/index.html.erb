@@ -1,0 +1,46 @@
+<% content_for :title, "Dashboard" %>
+
+<h1 class="text-2xl font-semibold mb-4">Dashboard</h1>
+
+<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  <div class="card bg-base-100 shadow p-5">
+    <p class="text-sm text-base-content/60">Usuarios</p>
+    <p class="text-3xl font-semibold"><%= @stats[:users] %></p>
+  </div>
+
+  <div class="card bg-base-100 shadow p-5">
+    <p class="text-sm text-base-content/60">Roles</p>
+    <p class="text-3xl font-semibold">
+      <% if policy(Role).index? %>
+        <%= link_to @stats[:roles], roles_path, class: "link link-hover" %>
+      <% else %>
+        <%= @stats[:roles] %>
+      <% end %>
+    </p>
+  </div>
+
+  <div class="card bg-base-100 shadow p-5">
+    <p class="text-sm text-base-content/60">Permisos</p>
+    <p class="text-3xl font-semibold"><%= @stats[:permissions] %></p>
+  </div>
+
+  <div class="card bg-base-100 shadow p-5">
+    <p class="text-sm text-base-content/60">Sesiones activas</p>
+    <p class="text-3xl font-semibold"><%= @stats[:sessions] %></p>
+  </div>
+</div>
+
+<div class="card bg-base-100 shadow p-6">
+  <div class="flex items-center gap-2 mb-1">
+    <h2 class="font-medium">Actividad</h2>
+    <span class="badge badge-warning badge-sm">Datos de ejemplo</span>
+  </div>
+  <p class="text-sm text-base-content/60 mb-3">
+    Todavía no hay una fuente real de actividad — esto solo muestra cómo se ve
+    un chart acá. Reemplazalo cuando exista un evento real que trackear.
+  </p>
+
+  <%= chart_tag type: :area, height: 260,
+        series: [ { name: "Actividad (demo)", data: @demo_activity.map { |d| d[:value] } } ],
+        xaxis: { categories: @demo_activity.map { |d| d[:date].strftime("%d %b") } } %>
+</div>

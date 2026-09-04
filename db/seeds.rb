@@ -31,10 +31,13 @@ if User.none?
   password = ENV["SEED_ADMIN_PASSWORD"]
 
   if email.present? && password.present?
-    role = Role.find_by!(key: "super")
-    User.create!(email_address: email, password: password, role: role)
-    puts "Usuario administrador creado: #{email}, rol: #{role&.name}"
+    super_role = Role.find_by!(key: "super")
+    User.create!(email_address: email, password: password, role: super_role)
+    puts "Usuario administrador creado: #{email}, rol: #{super_role&.name}"
   else
-    puts "Sin usuarios y sin SEED_ADMIN_EMAIL/SEED_ADMIN_PASSWORD — no se creó ningún usuario."
+    puts "Sin usuarios y sin SEED_ADMIN_EMAIL/SEED_ADMIN_PASSWORD — no se creó usuario administrador."
   end
+
+  guest_role = Role.find_by!(key: "guest")
+  User.create!(email_address: 'guest@example.com', password: 'password123456', role: guest_role)
 end

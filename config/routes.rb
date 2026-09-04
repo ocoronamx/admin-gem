@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "dashboard/index"
   resource :session
   resources :passwords, param: :token
   resources :roles, only: :index
@@ -15,5 +16,5 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
   get "styleguide", to: "pages#styleguide"
-  root to: "pages#styleguide" # temporal — la Fase 5 lo reemplaza por login/dashboard
+  root to: "dashboard#index"
 end
