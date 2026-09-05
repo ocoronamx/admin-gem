@@ -1,32 +1,35 @@
 require "rails_helper"
 
 RSpec.describe UserPolicy, type: :policy do
-  describe UserPolicy do
-    subject { described_class }
+  # let!(:role) { create(:role) }
+  let!(:role) { create(:role, name: "Editor", key: "editor") }
+  let!(:user) { create(:user, role: role) }
+  let!(:other_user) { create(:user, role: role) }
 
-    let(:role) { create(:role, name: "Editor", key: "editor") }
-    let(:user) { create(:user, role: role) }
-    let(:other_user) { create(:user, role: role) }
+  context "con permiso users.manage, sobre otro usuario" do
+    before { role.permissions << create(:permission, key: "users.manage") }
 
-    context "con permiso users.manage, prueba sobre otro usuario" do
-      before { role.permissions << create(:permission, key: "users.manage") }
-
+    permissions :toggle_active? do
       it "permite desactivar a otro usuario" do
-        expect(described_class.new(user, other_user)).to permit_action(:toggle_active?)
+        expect(described_class).to permit(user, other_user)
       end
     end
+  end
 
-    context "con permiso users.manage, prueba sobre sí mismo" do
-      before { role.permissions << create(:permission, key: "users.manage") }
+  context "con permiso users.manage, sobre sí mismo" do
+    before { role.permissions << create(:permission, key: "users.manage") }
 
+    permissions :toggle_active? do
       it "no permite desactivarse a sí mismo" do
-        expect(described_class.new(user, user)).not_to permit_action(:toggle_active?)
+        expect(described_class).not_to permit(user, user)
       end
     end
+  end
 
-    context "sin permiso users.manage" do
+  context "sin permiso users.manage" do
+    permissions :toggle_active? do
       it "no permite desactivar a nadie" do
-        expect(described_class.new(user, other_user)).not_to permit_action(:toggle_active?)
+        expect(described_class).not_to permit(user, other_user)
       end
     end
   end
