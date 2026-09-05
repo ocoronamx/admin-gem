@@ -26,6 +26,12 @@ roles.each do |key, attrs|
   puts "Rol listo: #{role.name} (#{role.permissions.count} permisos)"
 end
 
+super_role = Role.find_by!(key: "super")
+admin_role = Role.find_by!(key: "admin")
+standard_role = Role.find_by!(key: "standard")
+client_role = Role.find_by!(key: "client")
+guest_role = Role.find_by!(key: "guest")
+
 if User.none?
   email = ENV["SEED_ADMIN_EMAIL"]
   password = ENV["SEED_ADMIN_PASSWORD"]
@@ -38,11 +44,12 @@ if User.none?
     puts "Sin usuarios y sin SEED_ADMIN_EMAIL/SEED_ADMIN_PASSWORD — no se creó usuario administrador."
   end
 
-  guest_role = Role.find_by!(key: "guest")
-  User.create!(email_address: "guest@example.com", password: "password123456", role: guest_role)
-
-  # Un usuario desactivado de entrada, para ver el estado "Desactivado" sin
-  # tener que desactivar a alguien a mano primero.
-  User.create!(email_address: "desactivado@example.com", password: "password123456",
-               role: guest_role, deactivated_at: Time.current)
+  User.create!(email_address: "super@mail.com", password: "password123456", role: super_role)
+  User.create!(email_address: "admin@mail.com", password: "password123456", role: admin_role)
+  User.create!(email_address: "standard@mail.com", password: "password123456", role: standard_role)
+  User.create!(email_address: "client@mail.com", password: "password123456", role: client_role)
+  User.create!(email_address: "guest@mail.com", password: "password123456", role: guest_role)
+  User.create!(email_address: "guest_and_long@longmail.com", password: "password123456", role: guest_role)
+  User.create!(email_address: "inactive@mail.com", password: "password123456", role: guest_role, 
+               deactivated_at: Time.current)
 end
