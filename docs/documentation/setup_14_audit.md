@@ -391,6 +391,107 @@ RSpec.describe "AuditLogs", type: :request do
 end
 ```
 
+# FIXES
+
+**1. `app/models/role.rb`** — quita el scope que no aplica (`roles` no tiene `email_address`):
+
+**2. Migración nueva** — cierra la brecha entre el modelo (que ya exige `role`) y la base de datos (que hasta ahora lo permitía nulo):
+
+```bash
+bin/rails generate migration ChangeRoleIdNullConstraintOnUsers
+```
+```ruby
+class ChangeRoleIdNullConstraintOnUsers < ActiveRecord::Migration[8.1]
+  # Clases locales a la migración, no los modelos de la app — mismo patrón
+  # que AddRoleToUsers (Setup 7): si Role/User cambian de forma en el
+  # futuro, esta migración histórica sigue funcionando igual.
+  class MigrationUser < ActiveRecord::Base
+    self.table_name = "users"
+  end
+
+  class MigrationRole < ActiveRecord::Base
+    self.table_name = "roles"
+  end
+
+  def up
+    # Defensivo: si algún usuario quedó sin rol (no debería, pero por si
+    # acaso en dev/test), se le asigna "admin" antes de bloquear el NULL.
+    default_role = MigrationRole.find_by(key: "admin") || MigrationRole.first
+    MigrationUser.where(role_id: nil).update_all(role_id: default_role.id) if default_role
+
+    change_column_null :users, :role_id, false
+  end
+
+  def down
+    change_column_null :users, :role_id, true
+  end
+end
+```
+
+```bash
+bin/rails db:migrate
+```
+
+**3. Unifica cómo se saltan la verificación de Pundit** — en vez de mezclar un predicado global con `skip_after_action` sueltos, todos los controladores pre-auth/sin recurso lo declaran igual, explícito (más consistente con "Explicit over Magic"):
+
+`app/controllers/application_controller.rb` — quita el `unless:` y el método:
+```ruby
+  after_action :verify_pundit_authorization
+```
+```ruby
+  # (elimina por completo el método privado skip_pundit_authorization?)
+```
+
+`app/controllers/sessions_controller.rb` — añade la misma línea que ya tienen `pages`, `passwords` y `dashboard`:
+```ruby
+class SessionsController < ApplicationController
+  layout "application"
+
+  skip_after_action :verify_pundit_authorization
+
+  allow_unauthenticated_access only: %i[ new create ]
+  # ... el resto del archivo queda igual
+```
+
+**5. Limpia el boilerplate del generador en las policies** (funcionalmente no cambia nada, `ApplicationPolicy::Scope#resolve` ya lo resuelve):
+
+`app/policies/user_policy.rb`:
+```ruby
+class UserPolicy < ApplicationPolicy
+  # No podés desactivarte/reactivarte a vos mismo — evita autobloquearte el
+  # acceso por accidente. La vista consulta esto para directamente no mostrar
+  # el botón (ver app/views/users/_actions.html.erb).
+  def toggle_active?
+    permitted?(:manage) && record != user
+  end
+
+  class Scope < ApplicationPolicy::Scope
+  end
+end
+```
+
+`app/policies/role_policy.rb`:
+```ruby
+class RolePolicy < ApplicationPolicy
+  class Scope < ApplicationPolicy::Scope
+  end
+end
+```
+
+(`app/policies/audit_log_policy.rb` ya estaba limpio, sin cambios.)
+
+---
+
+```bash
+bin/rails db:migrate
+bundle exec rspec
+bundle exec rubocop
+bin/dev
+# → prueba login/logout, /styleguide y /roles — todo debe seguir funcionando igual
+```
+
+¿Corre todo bien? Si sí, seguimos con **Setup 15 — Testing**.
+
 **docs/documentation/setup_99_TODO.md** — mueve Setup 14 a hecho, Setup 15 a CURRENT:
 
 ```markdown

@@ -18,24 +18,37 @@ RSpec.describe "Users", type: :request do
   end
 
   describe "PATCH /users/:id/toggle_active" do
-    it "desactiva a otro usuario y corta su sesión" do
-      sign_in(admin)
-      target = create(:user, role: manage_role, password: "contraseña-larga-123")
+    context "cuando se desactiva a otro usuario" do
+      let(:target) { create(:user, role: manage_role, password: "contraseña-larga-123") }
 
-      patch toggle_active_user_path(target)
-      target.reload
+      before do
+        sign_in(admin)
+        patch toggle_active_user_path(target)
+        target.reload
+      end
 
-      expect(target.active?).to be false
-      expect(target.sessions.count).to eq(0)
+      it "desactiva al usuario" do
+        expect(target.active?).to be false
+      end
+
+      it "corta su sesión" do
+        expect(target.sessions.count).to eq(0)
+      end
     end
 
-    it "impide desactivarse a sí mismo" do
-      sign_in(admin)
+    context "cuando el administrador intenta desactivarse a sí mismo" do
+      before do
+        sign_in(admin)
+        patch toggle_active_user_path(admin)
+      end
 
-      patch toggle_active_user_path(admin)
+      it "redirige a la raíz" do
+        expect(response).to redirect_to(root_path)
+      end
 
-      expect(response).to redirect_to(root_path)
-      expect(admin.reload.active?).to be true
+      it "impide la desactivación" do
+        expect(admin.reload.active?).to be true
+      end
     end
   end
 

@@ -19,6 +19,7 @@
 
 ## CURRENT:
 * Setup 15 — Testing                         (RSpec, factories, qué probar y qué no)
+    * 
 
 ## TODO:
 * Setup 16 — Security hardening              (CSP, headers, Brakeman en CI)

@@ -118,6 +118,9 @@
  * estructura DOM de Tom Select 2.6.x — si una versión futura cambia el
  * markup interno, ajusta aquí y confirma visualmente en /styleguide.
  */
+.ts-wrapper {
+  position: relative;
+}
 .ts-wrapper.single .ts-control,
 .ts-wrapper.multi .ts-control {
   display: flex;
@@ -173,11 +176,14 @@
 }
 
 .ts-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
   background-color: var(--color-base-100);
   border: var(--border, 1px) solid var(--color-base-300);
   border-radius: var(--radius-field);
   box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
-  margin-top: 0.25rem;
   overflow: hidden;
   z-index: 20;
 }

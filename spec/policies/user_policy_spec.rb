@@ -8,12 +8,16 @@ RSpec.describe UserPolicy, type: :policy do
     let(:user) { create(:user, role: role) }
     let(:other_user) { create(:user, role: role) }
 
-    context "con permiso users.manage" do
+    context "con permiso users.manage, prueba sobre otro usuario" do
       before { role.permissions << create(:permission, key: "users.manage") }
 
       it "permite desactivar a otro usuario" do
         expect(described_class.new(user, other_user)).to permit_action(:toggle_active?)
       end
+    end
+
+    context "con permiso users.manage, prueba sobre sí mismo" do
+      before { role.permissions << create(:permission, key: "users.manage") }
 
       it "no permite desactivarse a sí mismo" do
         expect(described_class.new(user, user)).not_to permit_action(:toggle_active?)
