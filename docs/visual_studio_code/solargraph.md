@@ -62,7 +62,7 @@ Una vez completados estos pasos, solo necesitas reiniciar el servidor de lenguaj
 
 - Presiona el atajo Cmd + Shift + P (o F1).
 - Escribe Restart seguido del nombre del lenguaje que estás usando.
-- Selecciona el comando '>solargraph: Restart Solargraph'.
+- Selecciona el comando 'correspondiente de la lista'.
 
 Opcional: Anotaciones YARD para código dinámico
 
