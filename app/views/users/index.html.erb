@@ -3,17 +3,23 @@
 <h1 class="text-2xl font-semibold mb-4">Usuarios</h1>
 
 <%= render(layout: "components/card") do %>
-    <div class="flex items-center justify-between mb-4 gap-3">
-        <%= form_with url: users_path, method: :get do |form| %>
-        <div class="w-64">
-            <%= form.text_field :email, label: "Correo", value: params.dig(:q, :email),
-                    placeholder: "Buscar...", name: "q[email]" %>
-        </div>
-        <% end %>
+
+  <%= form_with url: users_path, method: :get do |form| %>
+    <div class="flex flex-wrap sm:items-center gap-4 mb-4">
+      <!-- Campo Email -->
+      <div class="w-full sm:w-auto sm:max-w-xs">
+        <%= form.text_field :email, label: "Correo", value: params.dig(:q, :email),
+                    placeholder: "Buscar...", name: "q[email]", class: "w-full" %>
+      </div>
+      <!-- Botones alineados -->
+      <div class="w-full sm:w-auto sm:ml-auto sm:mt-6 flex flex-col sm:flex-row gap-3 items-center [&>*]:w-full sm:[&>*]:w-auto">
         <% if policy(User).new? %>
-            <%= render "components/button", text: "Nuevo usuario", href: new_user_path, variant: :primary %>
-        <% end %>
+            <%= render "components/button", text: "Nuevo usuario", type: "primary", href: new_user_path, variant: :outline %>
+            <%#= render "components/button", text: "Nuevo usuario", href: new_user_path, variant: :primary %>
+        <% end %>  
+      </div>
     </div>
+  <% end %>
   
     <% component_table_columns = [
         { label: "Correo", attribute: :email_address },

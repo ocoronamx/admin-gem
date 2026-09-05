@@ -4,19 +4,29 @@
 
 <%= render(layout: "components/card") do %>
   <%= form_with url: roles_path, method: :get do |form| %>
-    <div class="flex flex-wrap items-end gap-3 mb-4">
-      <div class="w-48">
+    <div class="flex flex-wrap sm:items-center gap-4 mb-4">
+      
+      <!-- Campo Nombre -->
+      <div class="w-full sm:w-48">
         <%= form.text_field :name, label: "Nombre", value: params.dig(:q, :name),
-              placeholder: "Buscar...", name: "q[name]" %>
+              placeholder: "Buscar...", name: "q[name]", class: "w-full" %>
       </div>
-      <div class="w-48">
+      
+      <!-- Campo Clave -->
+      <div class="w-full sm:w-48">
         <%= form.text_field :key, label: "Clave", value: params.dig(:q, :key),
-              placeholder: "Buscar...", name: "q[key]" %>
+              placeholder: "Buscar...", name: "q[key]", class: "w-full" %>
       </div>
-      <%= render "components/button", text: "Filtrar", type: "submit", variant: :outline %>
-      <% if params[:q].present? %>
-        <%= render "components/button", text: "Limpiar", href: roles_path, variant: :ghost %>
-      <% end %>
+      
+      <!-- Botones alineados -->
+      <div class="w-full sm:w-auto sm:mt-6 flex flex-col sm:flex-row gap-3 items-center [&>*]:w-full sm:[&>*]:w-auto">
+        <%= render "components/button", text: "Filtrar", type: "submit", variant: :outline %>
+        
+        <% if params[:q].present? %>
+          <%= render "components/button", text: "Limpiar", href: roles_path, variant: :ghost %>
+        <% end %>
+      </div>
+
     </div>
   <% end %>
 

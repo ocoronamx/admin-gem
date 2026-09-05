@@ -14,7 +14,10 @@
     nav_items << { label: "Usuarios", icon: :users, path: users_path, available: true }
   end
   if policy(AuditLog).show?
-    nav_items << { label: "Auditoría", icon: :document_search_check, path: audit_logs_path, available: true }
+    nav_items << { label: "Auditoría", icon: :search_check, path: audit_logs_path, available: true }
+  end
+  if Rails.env.development?
+    nav_items << { label: "Styleguide", icon: :dashboard, path: styleguide_path, available: true }
   end
   nav_items << { label: "Catálogos", icon: :squares_2x2, path: nil, available: false }
   nav_items << { label: "Configuración", icon: :cog_6_tooth, path: nil, available: false }
