@@ -36,13 +36,14 @@
   </section>
 
   <%# Catálogo dinámico que itera las claves definidas en IconsHelper::ICONS %>
-  <section class="card bg-base-100 shadow p-6 space-y-3">
-    <h2 class="font-medium">Iconos disponibles (IconsHelper)</h2>
-    <div class="flex flex-wrap gap-4">
+  <section class="card bg-base-100 shadow p-6 space-y-4">
+    <h2 class="text-lg font-medium">Iconos disponibles (IconsHelper)</h2>
+    
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
       <% IconsHelper::ICONS.each_key do |name| %>
-        <div class="flex flex-col items-center gap-1 text-xs text-base-content/60">
+        <div class="flex flex-col items-center justify-center gap-2 p-4 border border-base-200 rounded-lg bg-base-100 hover:border-primary hover:text-primary transition-colors text-base-content/70 text-center" title="<%= name %>">
           <%= icon(name) %>
-          <span><%= name %></span>
+          <span class="text-xs truncate w-full"><%= name %></span>
         </div>
       <% end %>
     </div>
