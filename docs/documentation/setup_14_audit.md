@@ -393,9 +393,9 @@ end
 
 # FIXES
 
-**1. `app/models/role.rb`** — quita el scope que no aplica (`roles` no tiene `email_address`):
+**`app/models/role.rb`** — quita el scope que no aplica (`roles` no tiene `email_address`):
 
-**2. Migración nueva** — cierra la brecha entre el modelo (que ya exige `role`) y la base de datos (que hasta ahora lo permitía nulo):
+**Migración nueva** — cierra la brecha entre el modelo (que ya exige `role`) y la base de datos (que hasta ahora lo permitía nulo):
 
 ```bash
 bin/rails generate migration ChangeRoleIdNullConstraintOnUsers
@@ -432,7 +432,7 @@ end
 bin/rails db:migrate
 ```
 
-**3. Unifica cómo se saltan la verificación de Pundit** — en vez de mezclar un predicado global con `skip_after_action` sueltos, todos los controladores pre-auth/sin recurso lo declaran igual, explícito (más consistente con "Explicit over Magic"):
+**Unifica cómo se saltan la verificación de Pundit** — en vez de mezclar un predicado global con `skip_after_action` sueltos, todos los controladores pre-auth/sin recurso lo declaran igual, explícito (más consistente con "Explicit over Magic"):
 
 `app/controllers/application_controller.rb` — quita el `unless:` y el método:
 ```ruby
@@ -453,7 +453,7 @@ class SessionsController < ApplicationController
   # ... el resto del archivo queda igual
 ```
 
-**5. Limpia el boilerplate del generador en las policies** (funcionalmente no cambia nada, `ApplicationPolicy::Scope#resolve` ya lo resuelve):
+**Limpia el boilerplate del generador en las policies** (funcionalmente no cambia nada, `ApplicationPolicy::Scope#resolve` ya lo resuelve):
 
 `app/policies/user_policy.rb`:
 ```ruby
@@ -490,7 +490,28 @@ bin/dev
 # → prueba login/logout, /styleguide y /roles — todo debe seguir funcionando igual
 ```
 
-¿Corre todo bien? Si sí, seguimos con **Setup 15 — Testing**.
+**app/assets/tailwind/application.css** — agrega `position: relative` al wrapper y reemplaza el bloque de `.ts-dropdown`:
+
+```css
+.ts-wrapper {
+  position: relative;
+}
+
+.ts-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background-color: var(--color-base-100);
+  border: var(--border, 1px) solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  overflow: hidden;
+  z-index: 20;
+}
+```
+
+Probá `/styleguide` de nuevo después de esto — el campo de Tecnologías debería arrancar vacío, y el dropdown solo debería aparecer al hacer click, flotando sobre el resto del formulario. Si sigue sin comportarse bien (por ejemplo, si el dropdown aparece pero en el lugar equivocado, o si el problema era otra cosa), avisame — no tengo forma de verlo renderizado desde acá, así que esto es mi mejor diagnóstico, no una certeza confirmada visualmente.
 
 **docs/documentation/setup_99_TODO.md** — mueve Setup 14 a hecho, Setup 15 a CURRENT:
 

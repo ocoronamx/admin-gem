@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Auditable do
-  # let!(:role) { create(:role, name: "Prueba", key: "prueba") }
 before { manage_role.permissions << create(:permission, key: "users.manage") }
+
   context "cuando se crea un recurso" do
     it "incrementa la cantidad de registros en AuditLog" do
       expect { create(:user, role: role) }.to change(AuditLog, :count).by(1)
