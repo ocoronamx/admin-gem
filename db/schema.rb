@@ -10,11 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_04_023259) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_003003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "audit_logs", force: :cascade do |t|
+    t.string "action", null: false
+    t.jsonb "changes_data", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.string "ip_address"
+    t.bigint "resource_id", null: false
+    t.string "resource_type", null: false
+    t.string "user_agent"
+    t.bigint "user_id"
+    t.index ["action"], name: "index_audit_logs_on_action"
+    t.index ["resource_type", "resource_id"], name: "index_audit_logs_on_resource"
+    t.index ["user_id"], name: "index_audit_logs_on_user_id"
+  end
 
   create_table "permissions", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -63,6 +77,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_04_023259) do
     t.index ["role_id"], name: "index_users_on_role_id"
   end
 
+  add_foreign_key "audit_logs", "users"
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "role_permissions", "roles"
   add_foreign_key "sessions", "users"

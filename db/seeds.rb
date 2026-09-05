@@ -3,7 +3,7 @@
 #
 # Cada módulo nuevo declara sus propios permisos "<recurso>.view" / "<recurso>.manage"
 # (ver docs/conventions/authorization.md). Por ahora solo existe "users".
-permission_keys = %w[users.view users.manage roles.view roles.manage]
+permission_keys = %w[users.view users.manage roles.view roles.manage audit_logs.view]
 permissions_by_key = permission_keys.index_with { |key| Permission.find_or_create_by!(key: key) }
 
 roles = {

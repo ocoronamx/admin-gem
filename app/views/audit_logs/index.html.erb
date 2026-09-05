@@ -1,0 +1,25 @@
+<% content_for :title, "Auditoría" %>
+
+<h1 class="text-2xl font-semibold mb-4">Auditoría</h1>
+
+<%= render(layout: "components/card") do %>
+  <%= render "components/table",
+        records: @audit_logs,
+        empty_title: "Sin actividad todavía",
+        columns: [
+          { label: "Usuario", format: ->(log) { log.user&.email_address || "Sistema" } },
+          { label: "Acción", format: ->(log) { audit_action_badge(log.action) } },
+          { label: "Recurso", format: ->(log) { "#{log.resource_type} ##{log.resource_id}" } },
+          { label: "Cambios", format: ->(log) { format_audit_changes(log.changes_data) } },
+          { label: "Fecha", format: ->(log) { l(log.created_at, format: :short) } },
+          { label: "IP", attribute: :ip_address }
+        ] %>
+
+  <div class="flex items-center justify-between mt-4">
+    <p class="text-sm text-base-content/60"><%== @pagy.info_tag %></p>
+    <%== @pagy.series_nav(
+      nav_extra: 'class="join"', link_extra: 'class="join-item btn btn-sm"',
+      active_link_extra: 'class="join-item btn btn-sm btn-active"'
+    ) %>
+  </div>
+<% end %>

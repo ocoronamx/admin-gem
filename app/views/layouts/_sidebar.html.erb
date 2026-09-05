@@ -13,6 +13,8 @@
   if policy(User).show?
     nav_items << { label: "Usuarios", icon: :users, path: users_path, available: true }
   end
+  # if policy(AuditLog).show?
+  nav_items << { label: "Auditoría", icon: :bars_3, path: audit_logs_path, available: true }
   nav_items << { label: "Catálogos", icon: :squares_2x2, path: nil, available: false }
   nav_items << { label: "Configuración", icon: :cog_6_tooth, path: nil, available: false }
 %>

@@ -17,6 +17,7 @@ class ApplicationController < ActionController::Base
 
   before_action :set_theme
   before_action :set_sidebar_state
+  before_action :set_current_request
 
   # Falla en vez de dejar pasar en silencio si un controlador nuevo olvida autorizar una acción.
   # after_action :verify_authorized, except: :index, raise: false
@@ -28,21 +29,10 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # Inicializa la variable de instancia con la preferencia del tema visual.
-  # Valida que la cookie de tema sea estricta ("light" o "dark") para evitar valores arbitrarios,
-  # aplicando "light" como fallback de seguridad.
-  #
-  # @return [String] El tema activo ("light" o "dark").
-  def set_theme
-    @current_theme = %w[light dark].include?(cookies[:theme]) ? cookies[:theme] : "light"
-  end
-
-  # Inicializa la variable de instancia con el estado de despliegue de la barra lateral
-  # leyendo la preferencia persistida en las cookies.
-  #
-  # @return [Boolean] true si la cookie equivale a "collapsed", de lo contrario false.
-  def set_sidebar_state
-    @sidebar_collapsed = cookies[:sidebar] == "collapsed"
+  # Expone el request actual en Current para que un modelo (ej. Auditable)
+  # pueda registrar IP/user-agent sin que cada controller se lo pase a mano.
+  def set_current_request
+    Current.request = request
   end
 
   # Devuelve el tema visual activo durante el ciclo de vida del request.
@@ -51,6 +41,22 @@ class ApplicationController < ActionController::Base
   # @note Expuesto como `helper_method` para su consumo directo en plantillas ERB.
   def current_theme
     @current_theme
+  end
+  
+  # Inicializa la variable de instancia con la preferencia del tema visual.
+  # Valida que la cookie de tema sea estricta ("light" o "dark") para evitar valores arbitrarios,
+  # aplicando "light" como fallback de seguridad.
+  #
+  # @return [String] El tema activo ("light" o "dark").
+  def set_theme
+    @current_theme = %w[light dark].include?(cookies[:theme]) ? cookies[:theme] : "light"
+  end
+  # Inicializa la variable de instancia con el estado de despliegue de la barra lateral
+  # leyendo la preferencia persistida en las cookies.
+  #
+  # @return [Boolean] true si la cookie equivale a "collapsed", de lo contrario false.
+  def set_sidebar_state
+    @sidebar_collapsed = cookies[:sidebar] == "collapsed"
   end
 
   # Indica si la barra lateral de navegación debe renderizarse en su versión colapsada.
