@@ -82,4 +82,6 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  # gem 'solargraph', '>= 0.60.4', require: false
+  gem 'solargraph', '>= 0.60.4'
 end

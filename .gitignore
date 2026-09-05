@@ -43,3 +43,7 @@
 
 # Se regenera en cada build
 app/assets/builds/tailwind.css
+
+# Solargraph
+.solargraph.cache
+
