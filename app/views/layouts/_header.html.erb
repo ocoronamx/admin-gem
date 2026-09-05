@@ -36,17 +36,17 @@
     </label>
 
     <%# Menú desplegable para opciones del usuario %>
-    <div class="dropdown dropdown-end">
+    <div class="dropdown dropdown-end text-center">
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle" aria-label="Cuenta">
         <%= icon(:user_circle, css_class: "size-6") %>
       </div>
-      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box shadow z-10 w-56 mt-2 p-2">
-        <li class="menu-title"><%= Current.user.email_address %></li>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box shadow z-10 w-72 mt-2 p-2">
+        <li class="menu-title"><span class="block break-all"><%= Current.user.email_address %></span></li>
         <li>
           <%# button_to genera un <form>, así que estilizamos el botón directo
               en vez de depender del selector .menu > li > a de DaisyUI %>
           <%= button_to session_path, method: :delete,
-                class: "flex items-center gap-2 w-full text-left rounded-field hover:bg-base-200 px-3 py-2" do %>
+                class: "flex tex-centered items-center gap-2 w-full text-left rounded-field hover:bg-base-200 px-16 py-2" do %>
             <%= icon(:arrow_right_on_rectangle, css_class: "size-4") %>
             <span>Cerrar sesión</span>
           <% end %>

@@ -6,12 +6,12 @@
 
     <%= form_with url: session_path do |form| %>
       <%= form.email_field :email_address, label: "Correo", required: true, autofocus: true,
-            autocomplete: "username" %>
+            autocomplete: "username", class: "w-full" %>
 
       <%= form.password_field :password, label: "Contraseña", required: true, maxlength: 72,
-            autocomplete: "current-password" %>
+            autocomplete: "current-password", class: "w-full" %>
 
-      <div class="text-right -mt-2 mb-4">
+      <div class="text-right -mt-0 mb-4">
         <%= link_to "¿Olvidaste tu contraseña?", new_password_path, class: "link link-hover text-sm text-base-content/70" %>
       </div>
 
