@@ -1,23 +1,46 @@
-<%= form_with model: user, class: "space-y-1" do |form| %>
-  <%= form.email_field :email_address, label: "Correo", required: true, autofocus: true,
-        autocomplete: "email" %>
-
-  <%= form.password_field :password,
-        label: user.new_record? ? "Contraseña" : "Nueva contraseña",
-        required: user.new_record?, maxlength: 72, autocomplete: "new-password",
-        hint: user.new_record? ? "Mínimo 12 caracteres." : "Dejar en blanco para no cambiarla." %>
-
-  <%= form.password_field :password_confirmation, label: "Repite la contraseña",
-        required: user.new_record?, maxlength: 72, autocomplete: "new-password" %>
-
-  <% if user == Current.user %>
-    <div class="fieldset w-full">
-      <label class="label">Rol</label>
-      <p class="text-sm text-base-content/60">No podés cambiar tu propio rol desde acá.</p>
+<%= form_with model: user do |form| %>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+    
+    <!-- Correo -->
+    <div class="w-full">
+      <%= form.email_field :email_address, label: "Correo", required: true, autofocus: true,
+            autocomplete: "email", class: "w-full" %>
     </div>
-  <% else %>
-    <%= form.select :role_id, Role.order(:name).pluck(:name, :id), { label: "Rol" }, { include_blank: false } %>
-  <% end %>
 
-  <%= form.submit user.new_record? ? "Crear usuario" : "Guardar cambios", class: "btn btn-primary w-full mt-2" %>
+    <!-- Contraseña -->
+    <div class="w-full">
+      <%= form.password_field :password,
+            label: user.new_record? ? "Contraseña" : "Nueva contraseña",
+            required: user.new_record?, maxlength: 72, autocomplete: "new-password",
+            hint: user.new_record? ? "Mínimo 12 caracteres." : "En blanco para no cambiar.",
+            class: "w-full" %>
+    </div>
+
+    <!-- Repetir Contraseña -->
+    <div class="w-full">
+      <%= form.password_field :password_confirmation, label: "Repite la contraseña",
+            required: user.new_record?, maxlength: 72, autocomplete: "new-password",
+            class: "w-full" %>
+    </div>
+
+    <!-- Rol -->
+    <div class="w-full">
+      <% if user == Current.user %>
+        <div class="fieldset w-full">
+          <label class="label">Rol</label>
+          <p class="text-xs text-base-content/60 mt-1">No podés cambiar tu propio rol.</p>
+        </div>
+      <% else %>
+        <%= form.select :role_id, Role.order(:name).pluck(:name, :id), 
+              { label: "Rol" }, 
+              { include_blank: false, class: "w-full select select-bordered" } %>
+      <% end %>
+    </div>
+
+    <!-- Acciones -->
+    <div class="md:col-span-2 lg:col-span-4 mt-2">
+      <%= form.submit user.new_record? ? "Crear usuario" : "Guardar cambios", class: "btn btn-primary w-full md:w-auto" %>
+    </div>
+
+  </div>
 <% end %>
