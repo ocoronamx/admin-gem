@@ -187,3 +187,64 @@ Es literalmente el contenido de esta fase — pero vale nombrar el patrón: la C
 ## Mantenibilidad y compatibilidad futura
 
 Si algún módulo futuro necesita Action Cable/Turbo Streams (actualización en vivo del dashboard, por ejemplo), `connect-src 'self'` va a necesitar sumar `ws://`/`wss://` explícitamente — la CSP de esta fase no lo previó porque hoy no hay ningún uso de WebSockets en la app. Setup 17 (CI/CD) hereda un `bin/brakeman` limpio para simplemente enchufarlo al pipeline, sin tener que resolver warnings a esa altura.
+
+## Corrección (post-implementación)
+
+`style-src 'self'` sin excepciones rompía la leyenda de ApexCharts — la
+librería inyecta un `<style>` inline por render (confirmado en consola de
+Chrome, no es código propio). Se relajó a `style-src 'self' 'unsafe_inline'`.
+`script-src` no se tocó. Ver commit de fix para el detalle.
+
+Encontrado — y es un hueco real de Setup 16, no algo que hicieras vos. La consola lo deja clarísimo:
+
+```
+Applying inline style violates ... 'style-src 'self''... blocked.
+appendToForeignObject @ apexcharts-...js
+```
+
+ApexCharts arma su leyenda usando un `<foreignObject>` dentro del SVG (para poder usar flexbox de HTML normal ahí adentro) e inyecta su propio `<style>` inline con la CSS de esa leyenda cada vez que renderiza. Eso es interno de la librería, no algo que yo escribí — y mi CSP de Setup 16 lo bloquea sin excepción, así que la leyenda queda sin ningún estilo: los círculos de color y el texto pierden su `display: flex`/tamaño/posicionamiento y terminan apilados y estirados a lo loco — eso es exactamente el círculo negro gigante que ves tapando "Editor".
+
+## Por qué no lo agarré en Setup 16
+
+Cuando audité los `style=""` inline, busqué en **mi propio código** (`grep`) y encontré uno solo (`charts_helper.rb`), que arreglé moviéndolo a JS. No consideré que una librería de terceros pudiera inyectar `<style>` por su cuenta en tiempo de ejecución — ese bug no aparece haciendo grep del código fuente, solo se ve renderizando de verdad en el navegador. Buen catch.
+
+## El fix
+
+La consola te da hasta el hash SHA-256 exacto de cada bloque bloqueado — en teoría podría permitir *solo esos hashes* en vez de relajar la política entera. Lo descarté: son del bundle minificado de ApexCharts, así que cualquier actualización de la librería cambia el minificado y por lo tanto el hash, rompiendo los charts silenciosamente hasta que alguien mire la consola de nuevo — cambiar de versión no debería romper la CSP. La leyenda se regenera así en cada render de cada chart, con contenido que no controlamos nosotros ni es estático entre versiones.
+
+Lo pragmático: `style-src` con `unsafe-inline`, dejando `script-src` tan estricto como estaba (ahí sí importa — inyección de script es mucho más grave que de estilo, y ahí no hay ningún tercero que lo necesite).
+
+**config/initializers/content_security_policy.rb** — cambia solo esta línea:
+
+```ruby
+    # ApexCharts arma su leyenda con un <foreignObject> dentro del SVG e
+    # inyecta su propio <style> inline en cada render (confirmado en consola,
+    # no es código nuestro) — no hay forma de noncear/hashear eso sin que se
+    # rompa en cada actualización de la librería. script-src se queda estricto:
+    # ahí sí importa, no hay ningún tercero que necesite inline.
+    policy.style_src :self, :unsafe_inline
+```
+
+De paso, la otra línea de la consola (no relacionada al CSP, solo una advertencia de performance):
+
+```
+Canvas2D: Multiple readback operations using getImageData are faster with willReadFrequently
+```
+
+**app/javascript/charts/theme_colors.js** — un solo cambio, en la creación del contexto:
+
+```javascript
+const ctx = canvas.getContext("2d", { willReadFrequently: true })
+```
+
+## Validaciones
+
+```bash
+bin/dev
+# → /styleguide: la leyenda de los dos charts se ve normal, sin el círculo
+#   negro ni el layout roto
+# → devtools console: sin errores de CSP, sin el warning de Canvas2D
+# → probá el toggle de tema — los charts se siguen repintando igual que antes
+```
+
+Una alternativa que descarté pero que existe si en algún momento te importa más la estrictez que la simplicidad: scopear `content_security_policy` por controlador (Rails lo permite — un bloque distinto solo en los controllers que rendericen charts) en vez de relajar site-wide. No lo hice porque agrega una capa de "¿esta página tiene CSP distinta y por qué?" para un riesgo (inyección de *estilo*, no de script) que ya es bajo de por sí.

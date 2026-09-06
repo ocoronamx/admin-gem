@@ -7,7 +7,7 @@
 const canvas = document.createElement("canvas")
 canvas.width = 1
 canvas.height = 1
-const ctx = canvas.getContext("2d")
+const ctx = canvas.getContext("2d", { willReadFrequently: true })
 
 function resolveColor(cssColor) {
   ctx.fillStyle = cssColor
