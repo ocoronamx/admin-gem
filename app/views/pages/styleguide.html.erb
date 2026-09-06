@@ -6,39 +6,13 @@
 <% add_breadcrumb "Design System" %>
 
 <div class="space-y-8">
-  <h1 class="text-2xl font-semibold text-base-content">Design System — admin-gem</h1>
+  <% content_for :title, "Nuevo usuario" %>
 
-  <%# Muestra la paleta de colores del tema activo usando badges %>
-  <section class="card bg-base-100 shadow p-6 space-y-3">
-    <h2 class="font-medium">Colores semánticos</h2>
-    <div class="flex flex-wrap gap-2">
-      <span class="badge badge-primary">primary</span>
-      <span class="badge badge-secondary">secondary</span>
-      <span class="badge badge-accent">accent</span>
-      <span class="badge badge-neutral">neutral</span>
-      <span class="badge badge-info">info</span>
-      <span class="badge badge-success">success</span>
-      <span class="badge badge-warning">warning</span>
-      <span class="badge badge-error">error</span>
-    </div>
-  </section>
+  <h1 class="text-2xl font-semibold mb-4">
+    AdminGem Design System
+  </h1>
 
-  <%# Variantes de botones y estados según la guía del sistema %>
-  <section class="card bg-base-100 shadow p-6 space-y-3">
-    <h2 class="font-medium">Botones</h2>
-    <div class="flex flex-wrap gap-2">
-      <button class="btn btn-primary">Guardar</button>
-      <button class="btn btn-secondary">Secundario</button>
-      <button class="btn btn-outline">Outline</button>
-      <button class="btn btn-error">Eliminar</button>
-      <button class="btn" disabled>Deshabilitado</button>
-    </div>
-  </section>
-
-  <%# Catálogo dinámico que itera las claves definidas en IconsHelper::ICONS %>
-  <section class="card bg-base-100 shadow p-6 space-y-4">
-    <h2 class="text-lg font-medium">Iconos disponibles (IconsHelper)</h2>
-    
+  <%= render(layout: "components/card", locals: { title: "Icons (IconsHelper)" }) do %>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
       <% IconsHelper::ICONS.each_key do |name| %>
         <div class="flex flex-col items-center justify-center gap-2 p-4 border border-base-200 rounded-lg bg-base-100 hover:border-primary hover:text-primary transition-colors text-base-content/70 text-center" title="<%= name %>">
@@ -47,7 +21,140 @@
         </div>
       <% end %>
     </div>
-  </section>
+  <% end %>
+
+  <%= render(layout: "components/card", locals: { title: "Charts (ApexCharts)" }) do %>
+    <p class="text-sm text-base-content/60 -mt-2 mb-4">
+      Los colores salen del tema activo — probá el toggle de arriba, se repintan solos.
+    </p>
+
+    <div class="w-full overflow-x-auto">
+      <div class="grid sm:grid-cols-2 gap-4 min-w-[500px] sm:min-w-0">
+        <%= chart_tag type: :line, height: 240,
+              series: [
+                { name: "Usuarios activos", data: [ 30, 40, 35, 50, 49, 60, 70 ] },
+                { name: "Sesiones", data: [ 20, 28, 25, 33, 36, 44, 52 ] }
+              ],
+              xaxis: { categories: %w[Lun Mar Mié Jue Vie Sáb Dom] } %>
+
+        <%= chart_tag type: :donut, height: 240,
+              series: [ 44, 33, 23 ],
+              labels: %w[Admin Editor Invitado] %>
+      </div>
+    </div>
+  <% end %>
+
+  <%= render(layout: "components/card", locals: { title: "Formularios (AdminFormBuilder)" }) do %>
+    <p class="text-sm text-base-content/60 -mt-2">
+      Cada campo trae su fieldset, label y validator-hint solo. El de "Email" fuerza
+      un error de servidor para mostrar el estado inválido en rojo.
+    </p>
+
+    <%= form_with model: @demo_form, url: styleguide_path, method: :get do |form| %>
+      <div class="grid sm:grid-cols-2 gap-x-4">
+        <%= form.text_field :name, label: "Nombre", class: "w-full" %>
+        <%= form.email_field :email, label: "Email", class: "w-full" %>
+      </div>
+
+
+      <div class="w-full overflow-x-auto">
+        <div class="grid sm:grid-cols-2 gap-4  sm:min-w-0">
+          <%= form.text_area :bio, label: "Biografía", hint: "Máximo 280 caracteres.", rows: 3, class: "w-full" %>
+          <%= form.date_field :birthdate, label: "Fecha de nacimiento", class: "w-full" %>
+          <%= form.select :country, [ [ "Argentina", "ar" ], [ "México", "mx" ], [ "España", "es" ],
+                                      [ "Chile", "cl" ], [ "Colombia", "co" ] ], 
+                                      { label: "País", include_blank: "Selecciona un país" }, 
+                                      { class: "w-full select select-bordered" } %>
+        </div>
+      </div>
+      <div class="w-full overflow-x-auto">
+        <%= form.tom_select :tags, [  [ "Rails", "rails" ], 
+                                      [ "Hotwire", "hotwire" ], 
+                                      [ "Tailwind", "tailwind" ],
+                                      [ "Pundit", "pundit" ], 
+                                      [ "Postgres", "postgres" ] ], 
+                                    label: "Tecnologías (Tom Select)", 
+                                    multiple: true, class: "w-full min-w-[500px]" %>
+        <div class="grid sm:grid-cols-2 gap-4  sm:min-w-0">
+          <div class="flex flex-col w-full gap-1">
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full overflow-x-auto">
+        <div class="grid sm:grid-cols-2 gap-4  sm:min-w-0">
+          <fieldset class="fieldset w-full [&_label]:whitespace-normal [&_label]:text-left">
+            <%= form.check_box :newsletter, label: "Quiero recibir noticias por correo" %>
+          </fieldset>
+        </div>
+      </div>
+
+
+      <!-- Acciones -->
+      <div class="md:col-span-2 lg:col-span-4 mt-2">
+        <%= render "components/button", text: "Enviar (demo, no hace nada)", 
+                                        type: "submit", 
+                                        variant: :primary,
+                                        class: "w-full" %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= render(layout: "components/card", locals: { title: "Alertas" }) do %>
+    <%= render "components/alert", variant: :info, message: "Esto es información." %>
+    <%= render "components/alert", variant: :success, message: "La operación fue exitosa." %>
+    <%= render "components/alert", variant: :warning, message: "Revisa esto antes de continuar." %>
+    <%= render "components/alert", variant: :error, message: "Algo salió mal.", dismissible: true %>
+  <% end %>
+
+  <%= render(layout: "components/card", locals: { title: "Span Badges" }) do %>
+    <%= form_with model: @demo_form, url: styleguide_path, method: :get do |form| %>
+    
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+        <span class="badge badge-primary w-full h-auto whitespace-normal py-1 text-center break-words">
+          primary </span>
+        <span class="badge badge-secondary w-full h-auto whitespace-normal py-1 text-center break-words">
+          secondary </span>
+        <span class="badge badge-accent w-full h-auto whitespace-normal py-1 text-center break-words">
+          accent </span>
+        <span class="badge badge-neutral w-full h-auto whitespace-normal py-1 text-center break-words">
+          neutral </span>
+        <span class="badge badge-info w-full h-auto whitespace-normal py-1 text-center break-words">
+          info </span>
+        <span class="badge badge-success w-full h-auto whitespace-normal py-1 text-center break-words">
+          success </span>
+        <span class="badge badge-warning w-full h-auto whitespace-normal py-1 text-center break-words">
+          warning </span>
+        <span class="badge badge-error w-full h-auto whitespace-normal py-1 text-center break-words">
+          error </span>
+        <span class="badge badge-disabled w-full h-auto whitespace-normal py-1 text-center break-words">
+          disabled </span>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= render(layout: "components/card", locals: { title: "Buttons" }) do %>
+    <form action="<%= styleguide_path %>" accept-charset="UTF-8" method="get">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+        <%= render "components/button", text: "primary",  type: "submit", 
+                                        variant: :primary, class: "w-full" %>
+        <%= render "components/button", text: "secondary",  type: "submit", 
+                                        variant: :secondary, class: "w-full" %>
+        <%= render "components/button", text: "accent",  type: "submit", 
+                                        variant: :accent, class: "w-full" %>
+        <%= render "components/button", text: "neutral",  type: "submit", 
+                                        variant: :neutral, class: "w-full" %>
+        <%= render "components/button", text: "success",  type: "submit", 
+                                        variant: :success, class: "w-full" %>
+        <%= render "components/button", text: "warning",  type: "submit", 
+                                        variant: :warning, class: "w-full" %>
+        <%= render "components/button", text: "error",  type: "submit", 
+                                        variant: :error, class: "w-full" %>
+        <%= render "components/button", text: "disabled",  type: "submit", 
+                                        disabled: true, class: "w-full" %>
+      </div>
+    </form>
+  <% end %>
 
   <section class="card bg-base-100 shadow p-6 space-y-3">
     <h2 class="font-medium">Card (render layout:, contenido libre)</h2>
@@ -56,93 +163,36 @@
     <% end %>
   </section>
 
-  <section class="card bg-base-100 shadow p-6 space-y-3">
-    <h2 class="font-medium">Alertas</h2>
-    <%= render "components/alert", variant: :info, message: "Esto es información." %>
-    <%= render "components/alert", variant: :success, message: "La operación fue exitosa." %>
-    <%= render "components/alert", variant: :warning, message: "Revisa esto antes de continuar." %>
-    <%= render "components/alert", variant: :error, message: "Algo salió mal.", dismissible: true %>
-  </section>
-
-  <section class="card bg-base-100 shadow p-6 space-y-3">
-    <h2 class="font-medium">Badges de estado (helper, no partial)</h2>
-    <div class="flex gap-2">
+  <%= render(layout: "components/card", locals: { title: "Badges de estado y Modal" }) do %>
+    <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4 w-full">
       <%= status_badge("Activo", variant: :success) %>
       <%= status_badge("Inactivo", variant: :neutral) %>
+      <div class="fieldset">
+        <%= render "components/button", text: "Abrir modal", type: "button", class: "btn w-full",
+                                        data: { controller: "modal",
+                                                modal_id_value: "demo_modal",
+                                                action: "modal#open" } %>
+        <p class="text-xs text-base-content/60 mt-1">
+          Los diálogos de confirmación (<code>data: { turbo_confirm: "..." }</code>) usan el mismo
+          mecanismo de <code>&lt;dialog&gt;</code> — se verán en acción en Setup 10 con "Eliminar".
+        </p>
+      </div>
     </div>
-  </section>
 
-  <section class="card bg-base-100 shadow p-6 space-y-3">
-    <h2 class="font-medium">Empty state</h2>
+    <%= render(layout: "components/modal", locals: { id: "demo_modal", title: "Modal de ejemplo" }) do %>
+      <p class="text-base-content/70 mb-4">Contenido del modal, definido con un bloque igual que Card.</p>
+      <div class="modal-action">
+        <form method="dialog">
+          <%= render "components/button", text: "Cerrar",  type: "submit", 
+                                          variant: :neutral, class: "w-full" %>
+        </form>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= render(layout: "components/card", locals: { title: "Empty state" }) do %>
     <%= render "components/empty_state", title: "Sin catálogos todavía",
           description: "Cuando exista el módulo, aquí se listarán.", icon: :squares_2x2 %>
-  </section>
-
-  <section class="card bg-base-100 shadow p-6 space-y-3">
-    <h2 class="font-medium">Modal</h2>
-    <button class="btn" data-controller="modal" data-modal-id-value="demo_modal" data-action="modal#open">
-      Abrir modal
-    </button>
-    <p class="text-xs text-base-content/50 mt-2">
-      Los diálogos de confirmación (<code>data: { turbo_confirm: "..." }</code>) usan el mismo
-      mecanismo de <code>&lt;dialog&gt;</code> — se verán en acción en Setup 10 con "Eliminar".
-    </p>
-  </section>
-
-  <section class="card bg-base-100 shadow p-6 space-y-4">
-    <h2 class="font-medium">Formularios (AdminFormBuilder)</h2>
-    <p class="text-sm text-base-content/60 -mt-2">
-      Cada campo trae su fieldset, label y validator-hint solo. El de "Email" fuerza
-      un error de servidor para mostrar el estado inválido en rojo.
-    </p>
-
-    <%= form_with model: @demo_form, url: "#", method: :get do |form| %>
-      <div class="grid sm:grid-cols-2 gap-x-4">
-        <%= form.text_field :name, label: "Nombre" %>
-        <%= form.email_field :email, label: "Email" %>
-      </div>
-
-      <%= form.text_area :bio, label: "Biografía", hint: "Máximo 280 caracteres.", rows: 3 %>
-
-      <div class="grid sm:grid-cols-2 gap-x-4">
-        <%= form.date_field :birthdate, label: "Fecha de nacimiento" %>
-        <%= form.select :country, [ [ "Argentina", "ar" ], [ "México", "mx" ], [ "España", "es" ],
-              [ "Chile", "cl" ], [ "Colombia", "co" ] ], label: "País", include_blank: "Selecciona un país" %>
-      </div>
-
-      <%= form.tom_select :tags, [ [ "Rails", "rails" ], [ "Hotwire", "hotwire" ], [ "Tailwind", "tailwind" ],
-            [ "Pundit", "pundit" ], [ "Postgres", "postgres" ] ], label: "Tecnologías (Tom Select)", multiple: true %>
-
-      <%= form.check_box :newsletter, label: "Quiero recibir noticias por correo" %>
-
-      <%= render "components/button", text: "Enviar (demo, no hace nada)", type: "submit", variant: :primary %>
-    <% end %>
-  </section>
-
-  <section class="card bg-base-100 shadow p-6 space-y-3">
-    <h2 class="font-medium">Charts (ApexCharts)</h2>
-    <p class="text-sm text-base-content/60 -mt-2">
-      Los colores salen del tema activo — probá el toggle de arriba, se repintan solos.
-    </p>
-
-    <div class="grid sm:grid-cols-2 gap-4">
-      <%= chart_tag type: :line, height: 240,
-            series: [
-              { name: "Usuarios activos", data: [ 30, 40, 35, 50, 49, 60, 70 ] },
-              { name: "Sesiones", data: [ 20, 28, 25, 33, 36, 44, 52 ] }
-            ],
-            xaxis: { categories: %w[Lun Mar Mié Jue Vie Sáb Dom] } %>
-
-      <%= chart_tag type: :donut, height: 240,
-            series: [ 44, 33, 23 ],
-            labels: %w[Admin Editor Invitado] %>
-    </div>
-  </section>
-
-  <%= render(layout: "components/modal", locals: { id: "demo_modal", title: "Modal de ejemplo" }) do %>
-    <p class="text-base-content/70 mb-4">Contenido del modal, definido con un bloque igual que Card.</p>
-    <div class="modal-action">
-      <form method="dialog"><button class="btn">Cerrar</button></form>
-    </div>
   <% end %>
+
 </div>

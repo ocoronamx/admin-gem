@@ -6,9 +6,19 @@
 <div class="card bg-base-100 shadow <%= extra_class %>">
   <div class="card-body">
     <% if title || actions %>
-      <div class="flex items-center justify-between mb-2">
-        <% if title %><h2 class="card-title"><%= title %></h2><% end %>
-        <% if actions %><div class="flex gap-2"><%= actions %></div><% end %>
+      <div class="flex items-start justify-between mb-2 gap-4">
+        
+        <% if title %>
+          <!-- Cambiamos break-words por break-all -->
+          <h2 class="card-title min-w-0 break-all">
+            <%= title %>
+          </h2>
+        <% end %>
+        
+        <% if actions %>
+          <div class="flex gap-2 shrink-0"><%= actions %></div>
+        <% end %>
+        
       </div>
     <% end %>
     <%= yield %>

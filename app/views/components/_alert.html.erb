@@ -12,16 +12,20 @@
     info: :information_circle, success: :check_circle, warning: :exclamation_triangle, error: :x_circle
   }.fetch(variant.to_sym, :information_circle)
 
-  html_attrs = { class: "alert #{variant_class} shadow-sm #{extra_class}".strip, role: "alert" }
+  html_attrs = { class: "alert #{variant_class} shadow-sm #{extra_class} overflow-x-auto".strip, role: "alert" }
   html_attrs[:data] = { controller: "alert" } if dismissible
 %>
 <%= tag.div(**html_attrs) do %>
   <%= icon(icon_name, css_class: "size-5 shrink-0") %>
-  <span><%= message %></span>
+  
+  <!-- Agregamos min-w-0 y break-words al texto -->
+  <span class="min-w-0 break-words"><%= message %></span>
+  
   <% if dismissible %>
-    <button type="button" class="btn btn-ghost btn-xs btn-circle ml-auto"
+    <!-- Mantenemos ml-auto pero agregamos pl-4 para asegurar separación -->
+    <button type="button" class="btn btn-ghost btn-xs btn-circle ml-auto pl-7 shrink-0"
             data-action="alert#dismiss" aria-label="Cerrar">
-      <%= icon(:x_mark, css_class: "size-4") %>
+      <%= icon(:x_mark, css_class: "size-5 shrink-0") %>
     </button>
   <% end %>
 <% end %>
