@@ -11,12 +11,13 @@ module ChartsHelper
   def chart_tag(type:, series:, id: nil, height: 320, **options)
     content_tag :div, "",
       id: id,
-      style: "min-height: #{height}px",
+      class: "w-full",
       data: {
         controller: "chart",
         chart_type_value: type.to_s,
         chart_series_value: series,
-        chart_options_value: options
+        chart_options_value: options,
+        chart_height_value: height
       }
   end
 end

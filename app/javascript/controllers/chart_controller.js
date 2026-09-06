@@ -6,9 +6,10 @@ import { readThemeColors } from "charts/theme_colors"
 // través de `chart_tag` (ver app/helpers/charts_helper.rb), que ya agrega
 // data-controller="chart" y los tres values de acá abajo.
 export default class extends Controller {
-  static values = { type: String, series: Array, options: Object }
+  static values = { type: String, series: Array, options: Object, height: Number }
 
   connect() {
+    this.element.style.minHeight = `${this.heightValue}px`
     this.chart = new ApexCharts(this.element, this.buildOptions())
     this.chart.render()
 

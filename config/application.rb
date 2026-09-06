@@ -44,5 +44,13 @@ module AdminGem
     # constante directa: el autoloader todavía no está listo cuando este
     # archivo se evalúa.
     config.action_view.default_form_builder = "AdminFormBuilder"
+
+    # Cabeceras de defensa adicional. X-Frame-Options/frame-ancestors (CSP)
+    # se solapan a propósito — DENY cubre navegadores que no respeten
+    # frame-ancestors. Permissions-Policy apaga APIs del navegador que esta
+    # app no usa.
+    config.action_dispatch.default_headers["X-Frame-Options"] = "DENY"
+    config.action_dispatch.default_headers["Permissions-Policy"] =
+      "camera=(), microphone=(), geolocation=(), payment=()"
   end
 end
