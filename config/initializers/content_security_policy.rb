@@ -22,7 +22,7 @@ Rails.application.configure do
   # bloquearía y se cae toda la app. No hace falta nonce en style-src: el
   # único style="" inline que había (charts_helper.rb) se movió a JS en esta
   # misma fase — ver app/javascript/controllers/chart_controller.js.
-  
+
   # Generar un nonce (token de un solo uso) de forma dinámica
   config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
 
