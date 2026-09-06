@@ -16,19 +16,17 @@
   <div class="overflow-x-auto">
     <table class="table">
       <thead>
-        <tr>
+        <tr class="bg-base-200 text-base-content/70">
           <% columns.each do |column| %>
-            <th><%= column[:label] %></th>
+            <th class="font-medium"><%= column[:label] %></th>
           <% end %>
         </tr>
       </thead>
       <tbody>
         <% records.each do |record| %>
-          <tr>
+          <tr class="hover:bg-base-200/60 transition-colors">
             <% columns.each do |column| %>
-              <td>
-                <%= column[:format] ? column[:format].call(record) : record.public_send(column[:attribute]) %>
-              </td>
+              <td><%= column[:format] ? column[:format].call(record) : record.public_send(column[:attribute]) %></td>
             <% end %>
           </tr>
         <% end %>

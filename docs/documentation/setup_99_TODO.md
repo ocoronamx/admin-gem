@@ -18,11 +18,11 @@
 * Setup 14 — Auditoría                       (Auditable concern + AuditLog propio)
 * Setup 15 — Testing                         (RSpec, factories, qué probar y qué no)
 * Setup 16 — Security hardening              (CSP, headers, Brakeman en CI)
-
-## CURRENT:
 * Setup 17 — CI/CD                           (GitHub Actions: lint → security → tests → build)
 
-## TODO:
+## CURRENT:
 * Setup 18 — Docker / Deployment             (Dockerfile + Kamal 2)
+
+## TODO:
 * Setup 19 — Documentation                   (README, CONTRIBUTING, SECURITY, CHANGELOG, docs/adr/)
 * Setup 20 — Revisión final de arquitectura

@@ -25,9 +25,10 @@
         { label: "Correo", attribute: :email_address },
         { label: "Rol", format: ->(u) { u.role.name } },
         { label: "Estado", format: ->(u) {
-            u.active? ? content_tag(:span, "Activo", class: "badge badge-success badge-sm")
-                        : content_tag(:span, "Desactivado", class: "badge badge-ghost badge-sm")
-            } }
+            u.active? ? status_badge("Activo", variant: :success, size: :sm)
+            : status_badge("Desactivado", variant: :ghost, size: :sm)
+          } 
+        }
     ] %>
     <% if policy(User).edit? || policy(User).toggle_active? %>
         <% component_table_columns << { label: "", format: ->(u) { render "users/actions", user: u } } %>
