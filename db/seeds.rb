@@ -50,6 +50,6 @@ if User.none?
   User.create!(email_address: "client@mail.com", password: "password123456", role: client_role)
   User.create!(email_address: "guest@mail.com", password: "password123456", role: guest_role)
   User.create!(email_address: "guest_and_long@longmail.com", password: "password123456", role: guest_role)
-  User.create!(email_address: "inactive@mail.com", password: "password123456", role: guest_role, 
+  User.create!(email_address: "inactive@mail.com", password: "password123456", role: guest_role,
                deactivated_at: Time.current)
 end

@@ -10,8 +10,11 @@ RSpec.describe Permission, type: :model do
     expect(permission.key).to eq("users.manage")
   end
 
-  it "requiere el formato recurso.acción" do
+  it "requiere el formato recurso.acción invalido" do
     expect(build(:permission, key: "invalido")).not_to be_valid
+  end
+
+  it "requiere el formato recurso.acción con espacios" do
     expect(build(:permission, key: "con espacios.no")).not_to be_valid
   end
 
