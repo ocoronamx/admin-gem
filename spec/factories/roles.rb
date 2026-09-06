@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :role do
-    sequence(:name) { |n| "Rol #{n}" }
-    sequence(:key) { |n| "rol_#{n}" }
+    name { Faker::Job.unique.title }
+    key { name.parameterize.underscore }
   end
 end

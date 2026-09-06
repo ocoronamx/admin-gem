@@ -52,6 +52,11 @@ end
 
 **spec/support/authentication_helpers.rb** (nuevo):
 
+```bash
+mkdir spec/support
+touch spec/support/authentication_helpers.rb
+```
+
 ```ruby
 # Centraliza el login en request specs — antes cada archivo lo reinventaba
 # con una firma ligeramente distinta.
@@ -210,6 +215,10 @@ end
 (esta queda igual — el formato `recurso.acción` es más simple de generar a mano que de forzar con Faker sin arriesgar que rompa el regex de validación)
 
 **docs/conventions/testing.md** (nuevo):
+
+```bash
+touch docs/conventions/testing.md
+```
 
 ```markdown
 # Convenciones de testing — admin-gem

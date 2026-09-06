@@ -1,10 +1,6 @@
 require "rails_helper"
 
 RSpec.describe "Users", type: :request do
-  def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: user.password }
-  end
-
   let(:manage_role) { create(:role, name: "Admin", key: "admin_test") }
   let(:admin) { create(:user, role: manage_role, password: "contraseña-larga-123") }
 

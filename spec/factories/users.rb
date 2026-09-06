@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :user do
-    sequence(:email_address) { |n| "user#{n}@example.com" }
+    email_address { Faker::Internet.unique.email }
     password { "contraseña-larga-123" }
     association :role
   end

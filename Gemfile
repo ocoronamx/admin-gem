@@ -84,3 +84,5 @@ group :development do
   gem "web-console"
   gem "solargraph", ">= 0.60.4"
 end
+
+gem "simplecov", "~> 1.2", group: :test, require: false

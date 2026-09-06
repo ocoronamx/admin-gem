@@ -40,7 +40,7 @@ RSpec.describe "Roles", type: :request do
     it "rechaza a un usuario autenticado sin permiso roles.view" do
       user = create(:user, email_address: "foo@example.com", password: "password123456",
                     role: create(:role, name: "Sin permisos", key: "sin_permisos"))
-      post session_path, params: { email_address: user.email_address, password: user.password }
+      sign_in(user)
 
       get roles_path
 
