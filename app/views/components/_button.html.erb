@@ -13,8 +13,10 @@
   data        = local_assigns.fetch(:data, {})
 
   variant_class = {
-    primary: "btn-primary", secondary: "btn-secondary", outline: "btn-outline",
-    ghost: "btn-ghost", error: "btn-error", neutral: "btn-neutral", nil: ""
+    primary: "btn-primary", secondary: "btn-secondary", accent: "btn-accent",
+    neutral: "btn-neutral", info: "btn-info", success: "btn-success",
+    warning: "btn-warning", error: "btn-error", outline: "btn-outline",
+    ghost: "btn-ghost", nil: ""
   }.fetch(variant.to_sym, "btn-primary")
 
   size_class = { sm: "btn-sm", md: "", lg: "btn-lg" }.fetch(size.to_sym, "")
