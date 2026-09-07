@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_124722) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_002737) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -64,6 +64,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_124722) do
     t.string "user_agent"
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "system_settings", force: :cascade do |t|
+    t.string "active_theme", default: "light", null: false
+    t.string "brand_accent"
+    t.string "brand_primary"
+    t.string "brand_secondary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|

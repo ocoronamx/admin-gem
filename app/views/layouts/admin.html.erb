@@ -13,6 +13,7 @@
     
     <%# Carga del CSS de Tailwind y los módulos de JS vía Importmaps %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= brand_override_styles %>
     <%= javascript_importmap_tags %>
   </head>
   <body class="bg-base-200">

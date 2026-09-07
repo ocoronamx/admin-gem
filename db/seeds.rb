@@ -4,10 +4,14 @@
 # Cada módulo nuevo declara sus propios permisos "<recurso>.view" / "<recurso>.manage"
 # (ver docs/conventions/authorization.md). Por ahora solo existe "users".
 permission_keys = %w[users.view users.manage roles.view roles.manage audit_logs.view]
-permissions_by_key = permission_keys.index_with { |key| Permission.find_or_create_by!(key: key) }
+system_permission_keys = %w[system_settings.view system_settings.manage]
+all_keys = permission_keys + system_permission_keys
+
+# 1. Creamos un Hash completo donde la llave es el string y el valor es el objeto Permission
+permissions_by_key = all_keys.index_with { |key| Permission.find_or_create_by!(key: key) }
 
 roles = {
-  "super"    => { name: "Super",         permissions: permission_keys },
+  "super"    => { name: "Super",         permissions: all_keys },
   "admin"    => { name: "Administrator", permissions: permission_keys },
   "standard" => { name: "Standard",      permissions: %w[users.view] },
   "client"   => { name: "Client",        permissions: [] },
@@ -21,6 +25,7 @@ roles.each do |key, attrs|
 
   # Asignar la asociación has_many :through crea/borra los RolePermission
   # necesarios automáticamente — no hay que tocar esa tabla a mano.
+  permissions = permission_keys + system_permission_keys
   role.permissions = attrs[:permissions].map { |k| permissions_by_key.fetch(k) }
 
   puts "Rol listo: #{role.name} (#{role.permissions.count} permisos)"

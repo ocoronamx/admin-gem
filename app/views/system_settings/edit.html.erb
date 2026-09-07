@@ -1,0 +1,21 @@
+<% add_breadcrumb "Configuración" %>
+
+<%= render(layout: "components/card", locals: { title: "Configuración del sistema" }) do %>
+  <p class="text-sm text-base-content/60 mb-4">
+    Estos ajustes aplican para todas las personas que usan el sistema, no solo para ti.
+  </p>
+
+  <%= form_with model: @system_setting, url: system_setting_path, method: :patch, builder: AdminFormBuilder do |f| %>
+    <%= f.select :active_theme,
+          SystemSetting::AVAILABLE_THEMES.map { |t| [t == "light" ? "Claro" : "Oscuro", t] },
+          label: "Tema activo", hint: "Se aplica de inmediato a todo el sistema." %>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <%= f.color_field :brand_primary, label: "Color primario", hint: "Vacío = el color por defecto del tema." %>
+      <%= f.color_field :brand_secondary, label: "Color secundario" %>
+      <%= f.color_field :brand_accent, label: "Color de acento" %>
+    </div>
+
+    <%= f.submit "Guardar", class: "btn btn-primary mt-2" %>
+  <% end %>
+<% end %>

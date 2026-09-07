@@ -16,11 +16,11 @@
   if policy(AuditLog).show?
     nav_items << { label: "Auditoría", icon: :search_check, path: audit_logs_path, available: true }
   end
-  if Rails.env.development?
-    nav_items << { label: "Styleguide", icon: :dashboard, path: styleguide_path, available: true }
-  end
   nav_items << { label: "Catálogos", icon: :squares_2x2, path: nil, available: false }
-  nav_items << { label: "Configuración", icon: :cog_6_tooth, path: nil, available: false }
+  if Rails.env.development? && policy(SystemSetting).edit?
+    nav_items << { label: "Styleguide", icon: :dashboard, path: styleguide_path, available: true }
+    nav_items << { label: "Configuración", icon: :cog_6_tooth, path: edit_system_setting_path, available: true }
+  end
 %>
 <aside id="app-sidebar" class="menu bg-base-100 border-r border-base-300 min-h-full w-64 p-3 flex flex-col gap-1 transition-[width] duration-200 overflow-hidden">
   <%# Identidad visual de la aplicación / Logo corporativo %>

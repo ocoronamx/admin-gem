@@ -28,5 +28,5 @@ Rails.application.configure do
 
   # Aplica el nonce a scripts y estilos.
   # Esto permite que Rails/Turbo inyecten estilos dinámicos de forma segura sin requerir 'unsafe-inline'.
-  config.content_security_policy_nonce_directives = %w[script-src]
+  config.content_security_policy_nonce_directives = %w[script-src style-src]
 end

@@ -90,6 +90,10 @@ class AdminFormBuilder < ActionView::Helpers::FormBuilder
     end
   end
 
+  def color_field(attribute, options = {})
+    field(attribute, options) { |opts| super(attribute, opts) }
+  end
+
   private
 
   # Envuelve cualquier campo en fieldset + label + el input real + hint/error.

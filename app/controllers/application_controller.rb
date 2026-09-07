@@ -41,13 +41,12 @@ class ApplicationController < ActionController::Base
     @current_theme
   end
 
-  # Inicializa la variable de instancia con la preferencia del tema visual.
-  # Valida que la cookie de tema sea estricta ("light" o "dark") para evitar valores arbitrarios,
-  # aplicando "light" como fallback de seguridad.
+  # El tema ya no es una preferencia por navegador: lo decide un Super desde
+  # Configuración y aplica igual para todo el sistema (ver SystemSetting).
   #
-  # @return [String] El tema activo ("light" o "dark").
+  # @return [String] "light" o "dark".
   def set_theme
-    @current_theme = %w[light dark].include?(cookies[:theme]) ? cookies[:theme] : "light"
+    @current_theme = SystemSetting.instance.active_theme
   end
   # Inicializa la variable de instancia con el estado de despliegue de la barra lateral
   # leyendo la preferencia persistida en las cookies.
