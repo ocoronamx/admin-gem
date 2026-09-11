@@ -1,37 +1,18 @@
-@import "tailwindcss";
+# Pasos de configuración de sistema
 
-/* Los .mjs son plugins de build, no plantillas: que Tailwind no los escanee */
-@source not "./daisyui{,*}.mjs";
+1. **Fundación visual** — los dos temas base (`classic` e `ink_bronze`) coexistiendo en CSS, cero cambio visible todavía.
+2. **Capa de datos** — `SystemSetting`, Active Storage, policy, permisos, seeds. Existe pero nada lo usa todavía.
+3. **El cambio real** — controlador, rutas, vista de configuración, y ahí sí se apaga la cookie personal y se prende el sistema nuevo.
+4. **Specs + limpieza** — tests del modelo/policy/controller, y borrar lo que quedó muerto (`theme_toggle_controller.js`, la cookie).
 
-@plugin "./daisyui.mjs" {
-  themes: light --default, dark --prefersdark;
-}
 
-/*
- * ============================================================
- * TOKENS DE MARCA — único lugar que se toca para rebrandear
- * el sistema completo. Ver docs/design-system.md.
- * ============================================================
- */
-@theme {
-  /* Cambiar esta línea es todo lo que hace falta para pasar a
-     una fuente de marca propia (self-hosted) en el futuro. */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+## Paso 1 — Dos temas base, sin romper nada
 
-  /* Look sobrio/empresarial. Idénticos en light y dark a propósito —
-     viven aquí (no repetidos en cada @plugin de tema) para que cambiar
-     el radio global sea una sola línea, no dos. */
-  --radius-selector: 0.375rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.75rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 1;
-  --noise: 0;
-}
+**Decisión**: renombro lo que ya existe en `main` (`"light"`/`"dark"`) a `classic-light`/`classic-dark` — es exactamente la misma paleta, solo con nombre nuevo — y agrego `ink_bronze-light`/`ink_bronze-dark` (la paleta de `feat/theme`) **dormida**: existe en la CSS pero nada la selecciona todavía. Cero cambio visible al terminar este paso; se verifica a mano en devtools.
 
+**app/assets/tailwind/application.css** — reemplaza los dos bloques `@plugin` actuales por estos cuatro (el bloque `@theme` de arriba, con `--radius-*`/`--border`/etc., queda exactamente igual):
+
+```css
 @plugin "./daisyui-theme.mjs" {
   name: "classic-light";
   default: true;
@@ -154,112 +135,59 @@
   --color-error: oklch(68% 0.18 25);
   --color-error-content: oklch(18% 0.03 25);
 }
+```
 
-/* Colapso de sidebar en desktop, persistido vía cookie (ApplicationController). */
-[data-sidebar="collapsed"] #app-sidebar {
-  width: 4.5rem;
-}
-[data-sidebar="collapsed"] .sidebar-label {
-  display: none;
-}
+Nota: le quité `prefersdark: true` al que lo tenía en `feat/theme` — con **dos** temas de fondo oscuro coexistiendo (`classic-dark`, y ahora `ink_bronze-dark` dormido), dejar `prefersdark` en cualquiera de los dos sería arbitrario hasta que el Paso 3 decida esto de verdad vía `SystemSetting`. Por ahora todo lo maneja `classic-*` explícito, no la preferencia del sistema operativo.
 
-/*
- * ============================================================
- * TOM SELECT — integración visual con los tokens de DaisyUI (Setup 9)
- * ============================================================
- * No usamos el theme oficial de tom-select-rails: trae colores fijos que no
- * responden a --color-* ni a dark/light. Estos selectores corresponden a la
- * estructura DOM de Tom Select 2.6.x — si una versión futura cambia el
- * markup interno, ajusta aquí y confirma visualmente en /styleguide.
- */
-.ts-wrapper {
-  position: relative;
-}
-.ts-wrapper.single .ts-control,
-.ts-wrapper.multi .ts-control {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem;
-  min-height: 2.5rem;
-  padding: 0.25rem 0.75rem;
-  background-color: var(--color-base-100);
-  border: var(--border, 1px) solid var(--color-base-300);
-  border-radius: var(--radius-field);
-  color: var(--color-base-content);
-  cursor: text;
-}
+**app/controllers/application_controller.rb** — cambia solo `set_theme` (transición: sigue leyendo la cookie personal, pero ahora compone el nombre completo del tema; esto lo reemplaza el Paso 3):
 
-.ts-wrapper.focus .ts-control {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
+```ruby
+  # TRANSICIÓN (Paso 1 de 4 hacia SystemSetting): sigue leyendo la cookie
+  # personal, pero ahora compone el nombre completo del tema ("classic-light",
+  # etc.) — hardcodeado a "classic" hasta que el Paso 3 lo reemplace por la
+  # selección real del sistema.
+  #
+  # @return [String] El tema activo compuesto, ej. "classic-dark".
+  def set_theme
+    mode = %w[light dark].include?(cookies[:theme]) ? cookies[:theme] : "light"
+    @current_theme = "classic-#{mode}"
+  end
+```
 
-.ts-wrapper.disabled .ts-control {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+**app/javascript/controllers/theme_toggle_controller.js** — mismo criterio, un solo `data-theme` compuesto:
 
-.ts-control > input {
-  background: transparent;
-  border: 0;
-  outline: none;
-  color: inherit;
-  flex: 1 1 auto;
-  min-width: 4rem;
-}
+```javascript
+import { Controller } from "@hotwired/stimulus"
 
-.ts-control .item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.125rem 0.5rem;
-  background-color: var(--color-base-200);
-  border-radius: var(--radius-selector);
-  font-size: 0.8125rem;
-}
+// TRANSICIÓN (Paso 1 de 4): sigue siendo la cookie personal, "classic-"
+// hardcodeado hasta el Paso 3.
+export default class extends Controller {
+  persist(event) {
+    const theme = event.target.checked ? "dark" : "light"
+    document.cookie = `theme=${theme}; path=/; max-age=31536000; samesite=lax`
+    document.documentElement.setAttribute("data-theme", `classic-${theme}`)
 
-.ts-control .item .remove {
-  cursor: pointer;
-  opacity: 0.6;
-  border-left: 0;
+    window.dispatchEvent(new CustomEvent("theme:change"))
+  }
 }
+```
 
-.ts-control .item .remove:hover {
-  opacity: 1;
-}
+## Validaciones
 
-.ts-dropdown {
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin-top: 0.25rem;
-  background-color: var(--color-base-100);
-  border: var(--border, 1px) solid var(--color-base-300);
-  border-radius: var(--radius-field);
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
-  overflow: hidden;
-  z-index: 20;
-}
+```bash
+bin/dev
+# → todo se ve exactamente igual que antes — el toggle del header sigue
+#   alternando claro/oscuro sin ningún cambio visible
 
-.ts-dropdown .option {
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-  color: var(--color-base-content);
-}
+# En devtools console, para confirmar que ink_bronze está bien formado
+# aunque todavía nadie lo seleccione:
+document.documentElement.setAttribute("data-theme", "ink_bronze-light")
+# → /styleguide debería verse con la paleta cálida (bronce/latón). Volvé a
+#   "classic-light" (o recargá) para dejarlo como estaba.
 
-.ts-dropdown .option.active {
-  background-color: var(--color-base-200);
-}
+bundle exec rubocop
+```
 
-.ts-dropdown .option.selected {
-  background-color: var(--color-primary);
-  color: var(--color-primary-content);
-}
+Confirmame que esto corre bien y sin diferencias visuales, y seguimos con el Paso 2 (el modelo `SystemSetting`, Active Storage, policy y seeds — todavía sin conectar a nada que se vea).
 
-.ts-dropdown .no-results,
-.ts-dropdown .create {
-  padding: 0.5rem 0.75rem;
-  color: var(--color-base-content);
-  opacity: 0.6;
-}
+# TODO
