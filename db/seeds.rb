@@ -2,12 +2,18 @@
 # (Setup 13) o, para el arranque inicial, se siembra aquí vía variables de entorno.
 #
 # Cada módulo nuevo declara sus propios permisos "<recurso>.view" / "<recurso>.manage"
-# (ver docs/conventions/authorization.md). Por ahora solo existe "users".
+# (ver docs/conventions/authorization.md).
 permission_keys = %w[users.view users.manage roles.view roles.manage audit_logs.view]
-permissions_by_key = permission_keys.index_with { |key| Permission.find_or_create_by!(key: key) }
+
+# system_settings queda exclusivo de "super" — ni siquiera "admin" lo tiene.
+# La exclusividad vive acá, en los datos sembrados, no en un chequeo de rol
+# hardcodeado en la policy (mismo criterio que el resto del RBAC).
+super_only_permission_keys = %w[system_settings.view system_settings.manage]
+
+permissions_by_key = (permission_keys + super_only_permission_keys).index_with { |key| Permission.find_or_create_by!(key: key) }
 
 roles = {
-  "super"    => { name: "Super",         permissions: permission_keys },
+  "super"    => { name: "Super",         permissions: permission_keys + super_only_permission_keys },
   "admin"    => { name: "Administrator", permissions: permission_keys },
   "standard" => { name: "Standard",      permissions: %w[users.view] },
   "client"   => { name: "Client",        permissions: [] },
