@@ -27,13 +27,12 @@
     </button>
 
     <%# Switch de tema (Swap de DaisyUI) coordinado con el controlador Stimulus theme-toggle %>
-    <label class="swap swap-rotate btn btn-ghost btn-circle" aria-label="Cambiar tema">
-      <input type="checkbox"
-             data-controller="theme-toggle" data-action="change->theme-toggle#persist"
-             <%= "checked" if current_theme == "dark" %> />
-      <span class="swap-on"><%= icon(:moon) %></span>
-      <span class="swap-off"><%= icon(:sun) %></span>
-    </label>
+    <% if policy(SystemSetting).show? %>
+      <%= button_to system_setting_toggle_color_mode_path, method: :patch,
+            class: "btn btn-ghost btn-circle", aria: { label: "Cambiar modo de color" } do %>
+        <%= icon(SystemSetting.instance.color_mode == "light" ? :moon : :sun) %>
+      <% end %>
+    <% end %>
 
     <%# Menú desplegable para opciones del usuario %>
     <div class="dropdown dropdown-end text-center">

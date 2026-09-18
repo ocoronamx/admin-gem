@@ -41,16 +41,12 @@ class ApplicationController < ActionController::Base
     @current_theme
   end
 
-  # TRANSICIÓN (Paso 1 de 4 hacia SystemSetting): sigue leyendo la cookie
-  # personal, pero ahora compone el nombre completo del tema ("classic-light",
-  # etc.) — hardcodeado a "classic" hasta que el Paso 3 lo reemplace por la
-  # selección real del sistema.
-  #
-  # @return [String] El tema activo compuesto, ej. "classic-dark".
+  # El tema (base + claro/oscuro) es configuración del sistema, no una
+  # preferencia por sesión — ver SystemSetting.
   def set_theme
-    mode = %w[light dark].include?(cookies[:theme]) ? cookies[:theme] : "light"
-    @current_theme = "classic-#{mode}"
+    @current_theme = SystemSetting.instance.theme_name
   end
+
   # Inicializa la variable de instancia con el estado de despliegue de la barra lateral
   # leyendo la preferencia persistida en las cookies.
   #

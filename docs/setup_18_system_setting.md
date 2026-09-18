@@ -443,5 +443,352 @@ bin/rails console
 bundle exec rubocop
 ```
 
-Confirmame que corre bien y seguimos con el Paso 3 — ahí sí se conecta todo: controlador, rutas, la vista de configuración, y el corte real de la cookie personal por el sistema nuevo (incluyendo el favicon).
+# Paso 3 — El corte real
 
+Acá se apaga la cookie personal y se prende `SystemSetting`: controlador, rutas, la vista de configuración, el favicon dinámico, y el toggle del header ahora habla con el servidor en vez de con `document.cookie`.
+
+## Decisiones de este paso
+
+* **El toggle del header deja de ser Stimulus, pasa a ser un `button_to`** — coherente con que el tema ya es del sistema, no de tu sesión: cada click es un request real que actualiza `SystemSetting` y todos lo ven. `theme_toggle_controller.js` queda sin ninguna referencia (lo borro en el Paso 4, junto con la limpieza).
+* **`policy(SystemSetting).show?`** para el ítem del sidebar y el botón del header, mismo criterio (con la misma salvedad de `show?` vs `index?` que ya quedó anotada para Roles/Usuarios/Auditoría) que el resto — no invento un mecanismo nuevo para esto.
+* **`admin.html.erb` no tenía ningún `<link rel="icon">`** — encontré que el 404 de `favicon.ico` pasa justo ahí (el layout autenticado, donde pasás más tiempo); `application.html.erb` (login) sí los tenía. Igualo los dos y agrego el dinámico encima.
+* **`color_field`/`file_field` nuevos en `AdminFormBuilder`** — mismo patrón que todo lo demás (`field` + `super` dentro del bloque), nada especial.
+
+## Archivos
+
+**app/form_builders/admin_form_builder.rb** — agrega estos dos métodos (junto a `date_field`, por ejemplo):
+
+```ruby
+  def color_field(attribute, options = {})
+    field(attribute, options) { |opts| super(attribute, opts) }
+  end
+
+  def file_field(attribute, options = {})
+    field(attribute, options, css_class: "file-input") { |opts| super(attribute, opts) }
+  end
+```
+
+**app/helpers/system_settings_helper.rb** (nuevo):
+
+```ruby
+module SystemSettingsHelper
+  COLOR_TOKENS = %w[primary secondary accent].freeze
+
+  # <style> con los overrides de color de marca sobre el tema activo AHORA
+  # MISMO (compuesto: base_theme + color_mode) — nunca genera los 4 combos
+  # posibles, solo el que está realmente activo. Sin nonce: depende de
+  # style-src :unsafe_inline (ver config/initializers/content_security_policy.rb).
+  def brand_override_styles
+    setting = SystemSetting.instance
+    mode = setting.color_mode
+    return unless setting.custom_colors?(mode)
+
+    colors = setting.colors_for(mode)
+    declarations = COLOR_TOKENS.filter_map do |token|
+      value = colors[token]
+      next if value.blank?
+
+      "--color-#{token}: #{value}; --color-#{token}-content: #{readable_content_color_for(value)};"
+    end
+    return if declarations.empty?
+
+    tag.style("[data-theme=\"#{setting.theme_name}\"] { #{declarations.join(' ')} }".html_safe)
+  end
+
+  # Blanco o negro según la luminancia relativa (WCAG) del color elegido —
+  # guardarraíl simple, no optimiza el ratio de contraste. Solo aplica a
+  # colores hex reales (los custom); los default vienen en OKLCH y no pasan
+  # por acá, solo se muestran como swatch de referencia en la vista.
+  def readable_content_color_for(hex)
+    return "#0a0a0a" unless hex.start_with?("#")
+
+    r, g, b = hex.delete("#").scan(/../).map { |c| c.to_i(16) / 255.0 }
+    linear = [ r, g, b ].map { |c| c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055)**2.4 }
+    luminance = 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+    luminance > 0.5 ? "#0a0a0a" : "#fafafa"
+  end
+end
+```
+
+**app/controllers/system_settings_controller.rb** (nuevo):
+
+```ruby
+class SystemSettingsController < ApplicationController
+  before_action :set_system_setting
+
+  def edit
+    authorize @system_setting
+  end
+
+  def update
+    authorize @system_setting
+
+    @system_setting.assign_attributes(system_setting_params.except(*color_keys, :remove_logo, :remove_favicon))
+    @system_setting.assign_custom_colors(@system_setting.color_mode, color_params) if color_params.any?
+    @system_setting.logo.purge if params.dig(:system_setting, :remove_logo) == "1"
+    @system_setting.favicon.purge if params.dig(:system_setting, :remove_favicon) == "1"
+
+    if @system_setting.save
+      redirect_to edit_system_setting_path, notice: "Configuración actualizada."
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def toggle_color_mode
+    authorize @system_setting, :update?
+    @system_setting.update!(color_mode: @system_setting.color_mode == "light" ? "dark" : "light")
+    redirect_back fallback_location: root_path
+  end
+
+  def restore_previous_colors
+    authorize @system_setting, :update?
+    @system_setting.restore_previous_colors!(@system_setting.color_mode)
+    redirect_to edit_system_setting_path, notice: "Colores anteriores restaurados."
+  end
+
+  def reset_colors
+    authorize @system_setting, :update?
+    @system_setting.reset_colors_to_theme_default!(@system_setting.color_mode)
+    redirect_to edit_system_setting_path, notice: "Colores del tema restaurados."
+  end
+
+  private
+
+  def color_keys = %i[primary secondary accent]
+
+  def set_system_setting
+    @system_setting = SystemSetting.instance
+  end
+
+  def system_setting_params
+    params.require(:system_setting).permit(:app_name, :support_email, :base_theme, :color_mode, :logo, :favicon, *color_keys)
+  end
+
+  def color_params
+    system_setting_params.slice(*color_keys).to_h.stringify_keys.compact_blank
+  end
+end
+```
+
+**config/routes.rb** — agrega:
+
+```ruby
+  resource :system_setting, only: %i[edit update] do
+    patch :toggle_color_mode
+    patch :restore_previous_colors
+    patch :reset_colors
+  end
+```
+
+**app/controllers/application_controller.rb** — reemplaza `set_theme` (corte real, ya no lee cookie):
+
+```ruby
+  # El tema (base + claro/oscuro) es configuración del sistema, no una
+  # preferencia por sesión — ver SystemSetting.
+  def set_theme
+    @current_theme = SystemSetting.instance.theme_name
+  end
+```
+
+**app/views/layouts/admin.html.erb** — agrega en el `<head>`, junto a `csp_meta_tag`:
+
+```erb
+    <title><%= content_for(:title) || SystemSetting.instance.app_name %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= brand_override_styles %>
+
+    <% if SystemSetting.instance.favicon.attached? %>
+      <%= favicon_link_tag url_for(SystemSetting.instance.favicon) %>
+    <% else %>
+      <link rel="icon" href="/icon.png" type="image/png">
+      <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <% end %>
+```
+
+**app/views/layouts/application.html.erb** — mismo criterio:
+
+```erb
+    <title><%= content_for(:title) || SystemSetting.instance.app_name %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="<%= SystemSetting.instance.app_name %>">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= brand_override_styles %>
+
+    <%= yield :head %>
+
+    <% if SystemSetting.instance.favicon.attached? %>
+      <%= favicon_link_tag url_for(SystemSetting.instance.favicon) %>
+    <% else %>
+      <link rel="icon" href="/icon.png" type="image/png">
+      <link rel="icon" href="/icon.svg" type="image/svg+xml">
+      <link rel="apple-touch-icon" href="/icon.png">
+    <% end %>
+```
+
+**app/views/layouts/_header.html.erb** — reemplaza el `<label class="swap...">` completo:
+
+```erb
+    <% if policy(SystemSetting).show? %>
+      <%= button_to system_setting_toggle_color_mode_path, method: :patch,
+            class: "btn btn-ghost btn-circle", aria: { label: "Cambiar modo de color" } do %>
+        <%= icon(SystemSetting.instance.color_mode == "light" ? :moon : :sun) %>
+      <% end %>
+    <% end %>
+```
+
+**app/views/layouts/_sidebar.html.erb** — tres cambios: el bloque de identidad visual, la línea estática de "Configuración", y el nuevo bloque condicional:
+
+```erb
+<%
+  setting = SystemSetting.instance
+  nav_items = [
+    { label: "Inicio", icon: :home, path: root_path, available: true },
+  ]
+  if policy(Role).show?
+    nav_items << { label: "Roles", icon: :key, path: roles_path, available: true }
+  end
+  if policy(User).show?
+    nav_items << { label: "Usuarios", icon: :users, path: users_path, available: true }
+  end
+  if policy(AuditLog).show?
+    nav_items << { label: "Auditoría", icon: :search_check, path: audit_logs_path, available: true }
+  end
+  if Rails.env.development?
+    nav_items << { label: "Styleguide", icon: :dashboard, path: styleguide_path, available: true }
+  end
+  nav_items << { label: "Catálogos", icon: :squares_2x2, path: nil, available: false }
+  if policy(SystemSetting).show?
+    nav_items << { label: "Configuración", icon: :cog_6_tooth, path: edit_system_setting_path, available: true }
+  end
+%>
+<aside id="app-sidebar" class="menu bg-base-100 border-r border-base-300 min-h-full w-64 p-3 flex flex-col gap-1 transition-[width] duration-200 overflow-hidden">
+  <div class="flex items-center gap-2 px-2 py-3 mb-2">
+    <% if setting.logo.attached? %>
+      <%= image_tag setting.logo, class: "size-8 rounded-box object-contain shrink-0" %>
+    <% else %>
+      <span class="size-8 rounded-box bg-primary text-primary-content grid place-items-center font-bold shrink-0">
+        <%= setting.app_name.first.upcase %>
+      </span>
+    <% end %>
+    <span class="sidebar-label font-semibold text-base-content whitespace-nowrap"><%= setting.app_name %></span>
+  </div>
+```
+
+(el resto del archivo —la lista `<ul>` de `nav_items`— queda exactamente igual)
+
+**app/views/sessions/new.html.erb** — reemplaza:
+
+```erb
+    <h1 class="card-title justify-center text-2xl mb-4"><%= SystemSetting.instance.app_name %></h1>
+```
+
+**app/views/system_settings/edit.html.erb** (nuevo):
+
+```erb
+<% add_breadcrumb "Configuración" %>
+<%
+  setting = @system_setting
+  mode    = setting.color_mode
+  defaults = setting.public_send("default_colors_#{mode}")
+  custom   = setting.public_send("custom_colors_#{mode}")
+%>
+
+<%= render(layout: "components/card", locals: { title: "Configuración del sistema" }) do %>
+  <p class="text-sm text-base-content/60 mb-4">
+    Estos ajustes aplican para todas las personas que usan el sistema, no solo para ti.
+  </p>
+
+  <%= form_with model: setting, url: system_setting_path, method: :patch, builder: AdminFormBuilder, multipart: true do |f| %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <%= f.text_field :app_name, label: "Nombre de la app" %>
+      <%= f.email_field :support_email, label: "Correo de soporte", hint: "Opcional." %>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <%= f.select :base_theme,
+            SystemSetting::BASE_THEMES.map { |t| [ t == "classic" ? "Clásico" : "Ink & Bronze", t ] },
+            label: "Tema base", hint: "El claro/oscuro se alterna aparte, con el botón del header." %>
+      <%= f.select :color_mode,
+            SystemSetting::COLOR_MODES.map { |m| [ m == "light" ? "Claro" : "Oscuro", m ] },
+            label: "Modo de color" %>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="fieldset w-full">
+        <label class="label">Logo</label>
+        <% if setting.logo.attached? %>
+          <%= image_tag setting.logo, class: "h-10 mb-2" %>
+          <label class="label cursor-pointer justify-start gap-2">
+            <input type="checkbox" name="system_setting[remove_logo]" value="1" class="checkbox checkbox-sm">
+            Quitar logo actual
+          </label>
+        <% end %>
+        <%= f.file_field :logo, label: nil, accept: "image/png,image/jpeg,image/svg+xml,image/webp" %>
+      </div>
+
+      <div class="fieldset w-full">
+        <label class="label">Favicon</label>
+        <% if setting.favicon.attached? %>
+          <%= image_tag setting.favicon, class: "size-8 mb-2" %>
+          <label class="label cursor-pointer justify-start gap-2">
+            <input type="checkbox" name="system_setting[remove_favicon]" value="1" class="checkbox checkbox-sm">
+            Quitar favicon actual
+          </label>
+        <% end %>
+        <%= f.file_field :favicon, label: nil, accept: "image/png,image/x-icon" %>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between mt-4 mb-1">
+      <h3 class="font-medium">Colores de marca (<%= mode == "light" ? "modo claro" : "modo oscuro" %>)</h3>
+      <div class="flex gap-3 text-sm">
+        <%= button_to "Restaurar anteriores", restore_previous_colors_system_setting_path, method: :patch, class: "link link-hover" %>
+        <%= button_to "Restaurar del tema", reset_colors_system_setting_path, method: :patch, class: "link link-hover" %>
+      </div>
+    </div>
+    <p class="text-sm text-base-content/60 mb-2">
+      Vacío = el color por defecto del tema base. Se aplican solo al modo
+      <%= mode == "light" ? "claro" : "oscuro" %> — cambiá el modo arriba y guardá para editar el otro.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <% %w[primary secondary accent].each do |token| %>
+        <%= f.color_field token,
+              label: token.capitalize,
+              value: custom[token],
+              hint: defaults[token].present? ? "Del tema: #{defaults[token]}" : nil %>
+      <% end %>
+    </div>
+
+    <%= f.submit "Guardar", class: "btn btn-primary mt-4" %>
+  <% end %>
+<% end %>
+```
+
+## Validaciones
+
+```bash
+bin/dev
+# → entrá como super@mail.com: "Configuración" aparece en el sidebar
+# → entrá como admin@mail.com: "Configuración" NO aparece (permiso exclusivo de super)
+# → el botón de sol/luna del header ahora hace un POST (mirá la pestaña Network) —
+#   cambia para cualquiera que esté mirando la app en ese momento, no solo para vos
+# → cambiá el tema base a "Clásico": todo pasa a la paleta azul
+# → poné un color primario custom, guardá, "Restaurar anteriores" vuelve al
+#   valor previo; "Restaurar del tema" vuelve al OKLCH de fábrica
+# → subí un logo: aparece en el sidebar reemplazando la "A"; "Quitar logo actual"
+#   lo saca
+# → subí un favicon: revisá la pestaña del navegador, y confirmá en devtools
+#   que /favicon.ico ya no tira 404 (ahora hay un <link rel="icon"> real)
+# → probá /session/new (deslogueado): el título ya no dice "Admin Gem" fijo
+
+bundle exec rubocop
+```
+
+Confirmame y vamos con el Paso 4 — specs del modelo/policy/controller, y ahí sí borro `theme_toggle_controller.js` y cualquier resto de la cookie.

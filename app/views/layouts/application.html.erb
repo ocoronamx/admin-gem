@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html data-theme="<%= current_theme %>">
   <head>
-    <title><%= content_for(:title) || "Admin Gem" %></title>
+    <title><%= content_for(:title) || SystemSetting.instance.app_name %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Admin Gem">
+    <meta name="application-name" content="<%= SystemSetting.instance.app_name %>">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= brand_override_styles %>
+
+    <%= yield :head %>
+
+    <% if SystemSetting.instance.favicon.attached? %>
+      <%= favicon_link_tag url_for(SystemSetting.instance.favicon) %>
+    <% else %>
+      <link rel="icon" href="/icon.png" type="image/png">
+      <link rel="icon" href="/icon.svg" type="image/svg+xml">
+      <link rel="apple-touch-icon" href="/icon.png">
+    <% end %>
 
     <%= yield :head %>
 

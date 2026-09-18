@@ -1,0 +1,78 @@
+<% add_breadcrumb "Configuración" %>
+<%
+  setting = @system_setting
+  mode    = setting.color_mode
+  defaults = setting.public_send("default_colors_#{mode}")
+  custom   = setting.public_send("custom_colors_#{mode}")
+%>
+
+<%= render(layout: "components/card", locals: { title: "Configuración del sistema" }) do %>
+  <p class="text-sm text-base-content/60 mb-4">
+    Estos ajustes aplican para todas las personas que usan el sistema, no solo para ti.
+  </p>
+
+  <%= form_with model: setting, url: system_setting_path, method: :patch, builder: AdminFormBuilder, multipart: true do |f| %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <%= f.text_field :app_name, label: "Nombre de la app" %>
+      <%= f.email_field :support_email, label: "Correo de soporte", hint: "Opcional." %>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <%= f.select :base_theme,
+            SystemSetting::BASE_THEMES.map { |t| [ t == "classic" ? "Clásico" : "Ink & Bronze", t ] },
+            label: "Tema base", hint: "El claro/oscuro se alterna aparte, con el botón del header." %>
+      <%= f.select :color_mode,
+            SystemSetting::COLOR_MODES.map { |m| [ m == "light" ? "Claro" : "Oscuro", m ] },
+            label: "Modo de color" %>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="fieldset w-full">
+        <label class="label">Logo</label>
+        <% if setting.logo.attached? %>
+          <%= image_tag setting.logo, class: "h-10 mb-2" %>
+          <label class="label cursor-pointer justify-start gap-2">
+            <input type="checkbox" name="system_setting[remove_logo]" value="1" class="checkbox checkbox-sm">
+            Quitar logo actual
+          </label>
+        <% end %>
+        <%= f.file_field :logo, label: nil, accept: "image/png,image/jpeg,image/svg+xml,image/webp" %>
+      </div>
+
+      <div class="fieldset w-full">
+        <label class="label">Favicon</label>
+        <% if setting.favicon.attached? %>
+          <%= image_tag setting.favicon, class: "size-8 mb-2" %>
+          <label class="label cursor-pointer justify-start gap-2">
+            <input type="checkbox" name="system_setting[remove_favicon]" value="1" class="checkbox checkbox-sm">
+            Quitar favicon actual
+          </label>
+        <% end %>
+        <%= f.file_field :favicon, label: nil, accept: "image/png,image/x-icon" %>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between mt-4 mb-1">
+      <h3 class="font-medium">Colores de marca (<%= mode == "light" ? "modo claro" : "modo oscuro" %>)</h3>
+      <div class="flex gap-3 text-sm">
+        <%= button_to "Restaurar anteriores", restore_previous_colors_system_setting_path, method: :patch, class: "link link-hover" %>
+        <%= button_to "Restaurar del tema", reset_colors_system_setting_path, method: :patch, class: "link link-hover" %>
+      </div>
+    </div>
+    <p class="text-sm text-base-content/60 mb-2">
+      Vacío = el color por defecto del tema base. Se aplican solo al modo
+      <%= mode == "light" ? "claro" : "oscuro" %> — cambiá el modo arriba y guardá para editar el otro.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <% %w[primary secondary accent].each do |token| %>
+        <%= f.color_field token,
+              label: token.capitalize,
+              value: custom[token],
+              hint: defaults[token].present? ? "Del tema: #{defaults[token]}" : nil %>
+      <% end %>
+    </div>
+
+    <%= f.submit "Guardar", class: "btn btn-primary mt-4" %>
+  <% end %>
+<% end %>

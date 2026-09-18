@@ -2,7 +2,7 @@
 
 <div class="card w-full max-w-sm bg-base-100 shadow-xl">
   <div class="card-body">
-    <h1 class="card-title justify-center text-2xl mb-4">Admin Gem</h1>
+    <h1 class="card-title justify-center text-2xl mb-4"><%= SystemSetting.instance.app_name %></h1>
 
     <%= form_with url: session_path do |form| %>
       <%= form.email_field :email_address, label: "Correo", required: true, autofocus: true,

@@ -3,7 +3,9 @@
   Define una estructura orientada a datos para los elementos del menú,
   manejando estados activos, deshabilitados y la integración con el helper de íconos.
 %>
+
 <%
+  setting = SystemSetting.instance
   nav_items = [
     { label: "Inicio", icon: :home, path: root_path, available: true },
   ]
@@ -20,13 +22,21 @@
     nav_items << { label: "Styleguide", icon: :dashboard, path: styleguide_path, available: true }
   end
   nav_items << { label: "Catálogos", icon: :squares_2x2, path: nil, available: false }
-  nav_items << { label: "Configuración", icon: :cog_6_tooth, path: nil, available: false }
+  if policy(SystemSetting).show?
+    nav_items << { label: "Configuración", icon: :cog_6_tooth, path: edit_system_setting_path, available: true }
+  end
 %>
 <aside id="app-sidebar" class="menu bg-base-100 border-r border-base-300 min-h-full w-64 p-3 flex flex-col gap-1 transition-[width] duration-200 overflow-hidden">
   <%# Identidad visual de la aplicación / Logo corporativo %>
   <div class="flex items-center gap-2 px-2 py-3 mb-2">
-    <span class="size-8 rounded-box bg-primary text-primary-content grid place-items-center font-bold shrink-0">A</span>
-    <span class="sidebar-label font-semibold text-base-content whitespace-nowrap">Admin Gem</span>
+    <% if setting.logo.attached? %>
+      <%= image_tag setting.logo, class: "size-8 rounded-box object-contain shrink-0" %>
+    <% else %>
+      <span class="size-8 rounded-box bg-primary text-primary-content grid place-items-center font-bold shrink-0">
+        <%= setting.app_name.first.upcase %>
+      </span>
+    <% end %>
+    <span class="sidebar-label font-semibold text-base-content whitespace-nowrap"><%= setting.app_name %></span>
   </div>
 
   <%# Lista de opciones de navegación %>

@@ -6,10 +6,18 @@
 <!DOCTYPE html>
 <html data-theme="<%= current_theme %>" data-sidebar="<%= sidebar_collapsed? ? "collapsed" : "expanded" %>">
   <head>
-    <title><%= content_for(:title) || "Admin Gem" %></title>
+    <title><%= content_for(:title) || SystemSetting.instance.app_name %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= brand_override_styles %>
+
+    <% if SystemSetting.instance.favicon.attached? %>
+      <%= favicon_link_tag url_for(SystemSetting.instance.favicon) %>
+    <% else %>
+      <link rel="icon" href="/icon.png" type="image/png">
+      <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <% end %>
     
     <%# Carga del CSS de Tailwind y los módulos de JS vía Importmaps %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>

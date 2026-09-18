@@ -40,6 +40,14 @@ class AdminFormBuilder < ActionView::Helpers::FormBuilder
     field(attribute, options) { |opts| super(attribute, opts) }
   end
 
+  def color_field(attribute, options = {})
+    field(attribute, options) { |opts| super(attribute, opts) }
+  end
+
+  def file_field(attribute, options = {})
+    field(attribute, options, css_class: "file-input") { |opts| super(attribute, opts) }
+  end
+
   def text_area(attribute, options = {})
     field(attribute, options, css_class: "textarea") { |opts| super(attribute, opts) }
   end

@@ -9,6 +9,11 @@ Rails.application.routes.draw do
     end
   end
   resources :audit_logs, only: :index
+  resource :system_setting, only: %i[edit update] do
+    patch :toggle_color_mode
+    patch :restore_previous_colors
+    patch :reset_colors
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
