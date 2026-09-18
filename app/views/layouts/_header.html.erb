@@ -28,7 +28,7 @@
 
     <%# Switch de tema (Swap de DaisyUI) coordinado con el controlador Stimulus theme-toggle %>
     <label class="swap swap-rotate btn btn-ghost btn-circle" aria-label="Cambiar tema">
-      <input type="checkbox" value="dark" class="theme-controller"
+      <input type="checkbox"
              data-controller="theme-toggle" data-action="change->theme-toggle#persist"
              <%= "checked" if current_theme == "dark" %> />
       <span class="swap-on"><%= icon(:moon) %></span>
