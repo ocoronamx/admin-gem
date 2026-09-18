@@ -28,7 +28,7 @@
 
     <%# Switch de tema (Swap de DaisyUI) coordinado con el controlador Stimulus theme-toggle %>
     <% if policy(SystemSetting).show? %>
-      <%= button_to system_setting_toggle_color_mode_path, method: :patch,
+      <%= button_to toggle_color_mode_system_setting_path, method: :patch,
             class: "btn btn-ghost btn-circle", aria: { label: "Cambiar modo de color" } do %>
         <%= icon(SystemSetting.instance.color_mode == "light" ? :moon : :sun) %>
       <% end %>

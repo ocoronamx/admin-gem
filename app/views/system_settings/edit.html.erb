@@ -53,10 +53,14 @@
     </div>
 
     <div class="flex items-center justify-between mt-4 mb-1">
-      <h3 class="font-medium">Colores de marca (<%= mode == "light" ? "modo claro" : "modo oscuro" %>)</h3>
+      <h3 class="font-medium">Colores de marca (modo oscuro)</h3>
       <div class="flex gap-3 text-sm">
-        <%= button_to "Restaurar anteriores", restore_previous_colors_system_setting_path, method: :patch, class: "link link-hover" %>
-        <%= button_to "Restaurar del tema", reset_colors_system_setting_path, method: :patch, class: "link link-hover" %>
+        <%= link_to "Restaurar anteriores", restore_previous_colors_system_setting_path,
+              class: "link link-hover",
+              data: { turbo_method: :patch, turbo_confirm: "¿Restaurar los colores anteriores?" } %>
+        <%= link_to "Restaurar del tema", reset_colors_system_setting_path,
+              class: "link link-hover",
+              data: { turbo_method: :patch, turbo_confirm: "¿Volver a los colores originales del tema?" } %>
       </div>
     </div>
     <p class="text-sm text-base-content/60 mb-2">

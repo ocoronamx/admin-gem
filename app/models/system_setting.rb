@@ -27,8 +27,8 @@ class SystemSetting < ApplicationRecord
   validates :app_name, presence: true
   validates :base_theme, inclusion: { in: BASE_THEMES }
   validates :color_mode, inclusion: { in: COLOR_MODES }
-  validates :logo, content_type: %w[image/png image/jpeg image/svg+xml image/webp], size: { less_than: 2.megabytes }
-  validates :favicon, content_type: %w[image/png image/x-icon image/vnd.microsoft.icon], size: { less_than: 512.kilobytes }
+  validate :logo_is_valid_image
+  validate :favicon_is_valid_image
   validate :singleton, on: :create
 
   before_validation :sync_default_colors, if: :base_theme_changed?
@@ -80,5 +80,31 @@ class SystemSetting < ApplicationRecord
 
   def singleton
     errors.add(:base, "Solo puede existir una configuración de sistema") if SystemSetting.exists?
+  end
+
+  LOGO_TYPES = %w[image/png image/jpeg image/svg+xml image/webp].freeze
+  FAVICON_TYPES = %w[image/png image/x-icon image/vnd.microsoft.icon].freeze
+
+  def logo_is_valid_image
+    validate_attachment(:logo, LOGO_TYPES, 2.megabytes)
+  end
+
+  def favicon_is_valid_image
+    validate_attachment(:favicon, FAVICON_TYPES, 512.kilobytes)
+  end
+
+  # Validación propia en vez de la gema active_storage_validations: son dos
+  # campos, y Rails ya expone todo lo necesario vía el blob adjunto.
+  def validate_attachment(name, allowed_types, max_size)
+    attachment = public_send(name)
+    return unless attachment.attached?
+
+    unless attachment.blob.content_type.in?(allowed_types)
+      errors.add(name, "debe ser un archivo de tipo: #{allowed_types.join(', ')}")
+    end
+
+    if attachment.blob.byte_size > max_size
+      errors.add(name, "debe pesar menos de #{max_size / 1.kilobyte} KB")
+    end
   end
 end

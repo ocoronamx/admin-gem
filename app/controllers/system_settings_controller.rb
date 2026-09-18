@@ -3,9 +3,12 @@ class SystemSettingsController < ApplicationController
 
   def edit
     authorize @system_setting
+    puts "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    puts "@system_setting(#{@system_setting.class}) = #{@system_setting.inspect}"
   end
 
   def update
+    puts "\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n U P D A T E\n"
     authorize @system_setting
 
     @system_setting.assign_attributes(system_setting_params.except(*color_keys, :remove_logo, :remove_favicon))
@@ -23,6 +26,11 @@ class SystemSettingsController < ApplicationController
   def toggle_color_mode
     authorize @system_setting, :update?
     @system_setting.update!(color_mode: @system_setting.color_mode == "light" ? "dark" : "light")
+    # puts "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    # puts "toggle_color_mode . . . . . . "
+    # puts "@system_setting.color_mode = #{@system_setting.color_mode}"
+    # puts "@system_setting.update!(color_mode: #{@system_setting.color_mode == 'light' ? 'dark' : 'light'})"
+    # puts "redirect_back fallback_location: #{root_path}"
     redirect_back fallback_location: root_path
   end
 
